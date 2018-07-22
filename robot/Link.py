@@ -3,15 +3,15 @@ Link object.
 
 Python implementation by: Luis Fernando Lara Tobar and Peter Corke.
 Based on original Robotics Toolbox for Matlab code by Peter Corke.
-Permission to use and copy is granted provided that acknowledgement of
-the authors is made.
+Permission to use and copy is granted provided that acknowledgement
+of the authors is made.
 
 @author: Luis Fernando Lara Tobar and Peter Corke
 """
 
 from numpy import *
-from utility import *
-from transform import *
+from robot.utility import *
+from robot.transform import *
 import copy
 
 
@@ -26,7 +26,7 @@ class Link:
         - theta; the link rotation angle
         - dn; the link offset
         - sigma; 0 for a revolute joint, non-zero for prismatic
-        
+
     rigid-body inertial parameters
         - I; 3x3 inertia matrix about link COG
         - m; link mass
@@ -49,7 +49,7 @@ class Link:
 
     @see: L{Robot}
     """
-    
+
     LINK_DH = 1
     LINK_MDH = 2
 
@@ -67,7 +67,7 @@ class Link:
         and is useful if you want the robot to adopt a 'sensible' pose for zero
         joint angle configuration.
 
-        The optional CONVENTION argument is 'standard' for standard D&H parameters 
+        The optional CONVENTION argument is 'standard' for standard D&H parameters
         or 'modified' for modified D&H parameters.  If not specified the default
         'standard'.
         """
@@ -138,25 +138,24 @@ class Link:
 
     def display(self):
 
-        print self;
-        print
+        print(self)
 
-        if self.m != None:
-            print "m:", self.m
-        if self.r != None:
-            print "r:", self.r
-        if self.I != None:
-            print "I:\n", self.I
-        if self.Jm != None:
-            print "Jm:", self.Jm
-        if self.B != None:
-            print "B:", self.B
-        if self.Tc != None:
-            print "Tc:", self.Tc
-        if self.G != None:
-            print "G:", self.G
-        if self.qlim != None:
-            print "qlim:\n", self.qlim
+        if self.m is not None:
+            print("m: %s" % self.m)
+        if self.r is not None:
+            print("r: %s" % self.r)
+        if self.I is not None:
+            print("I: %s\n" % self.I)
+        if self.Jm is not None:
+            print("Jm: %s" % self.Jm)
+        if self.B is not None:
+            print("B: %s" % self.B)
+        if self.Tc is not None:
+            print("Tc: %s" % self.Tc)
+        if self.G is not None:
+            print("G: %s" % self.G)
+        if self.qlim is not None:
+            print("qlim: %s\n" % self.qlim)
 
     def copy(self):
         """
@@ -169,7 +168,7 @@ class Link:
         Compute friction torque for joint rate C{qd}.
         Depending on fields in the Link object viscous and/or Coulomb friction
         are computed.
-        
+
         @type qd: number
         @param qd: joint rate
         @rtype: number
@@ -178,25 +177,25 @@ class Link:
         tau = 0.0
         if isinstance(qd, (ndarray, matrix)):
                 qd = qd.flatten().T
-        if self.B == None:
+        if self.B is None:
             self.B = 0
         tau = self.B * qd
-        if self.Tc == None:
+        if self.Tc is None:
             self.Tc = mat([0,0])
         tau = tau + (qd > 0) * self.Tc[0,0] + (qd < 0) * self.Tc[0,1]
         return tau
-        
+
     def nofriction(self, all=False):
         """
         Return a copy of the Link object with friction parameters set to zero.
-        
+
         @type all: boolean
         @param all: if True then also zero viscous friction
         @rtype: Link
         @return: Copy of original Link object with zero friction
         @see: L{robot.nofriction}
         """
-        
+
         l2 = self.copy()
 
         l2.Tc = array([0, 0])
@@ -208,11 +207,11 @@ class Link:
 # methods to set kinematic or dynamic parameters
 
     fields = ["alpha", "A", "theta", "D", "sigma", "offset", "m", "Jm", "G", "B", "convention"];
-    
+
     def __setattr__(self, name, value):
         """
         Set attributes of the Link object
-        
+
             - alpha; scalar
             - A; scalar
             - theta; scalar
@@ -227,28 +226,28 @@ class Link:
             - I; 3x3 matrix, 3-vector or 6-vector
             - Tc; scalar or 2-vector
             - qlim; 2-vector
-        
+
         Inertia, I, can be specified as:
             - 3x3 inertia tensor
             - 3-vector, the diagonal of the inertia tensor
             - 6-vector, the unique elements of the inertia tensor [Ixx Iyy Izz Ixy Iyz Ixz]
-            
+
         Coloumb friction, Tc, can be specifed as:
             - scalar, for the symmetric case when Tc- = Tc+
             - 2-vector, the assymetric case [Tc- Tc+]
-            
+
         Joint angle limits, qlim, is a 2-vector giving the lower and upper limits
         of motion.
         """
-    
-        if value == None:
+
+        if value is None:
             self.__dict__[name] = value;
             return;
-            
+
         if name in self.fields:
             # scalar parameter
             if isinstance(value, (ndarray,matrix)) and value.shape != (1,1):
-                raise ValueError, "Scalar required"
+                raise ValueError("Scalar required")
             if not isinstance(value, (int,float,int32,float64)):
                 raise ValueError;
             self.__dict__[name] = value
@@ -256,10 +255,10 @@ class Link:
         elif name == "r":
             r = arg2array(value);
             if len(r) != 3:
-                raise ValueError, "matrix required"
+                raise ValueError("matrix required")
 
             self.__dict__[name] = mat(r)
-            
+
         elif name == "I":
             if isinstance(value, matrix) and value.shape == (3,3):
                 self.__dict__[name] = value;
@@ -273,9 +272,19 @@ class Link:
                         [v[3],v[1],v[4]],
                         [v[5],v[4],v[2]]])
                 else:
-                    raise ValueError, "matrix required";
+                    raise ValueError("matrix required")
 
         elif name == "Tc":
+            v = arg2array(value)
+
+            if len(v) == 1:
+                self.__dict__[name] =  mat([-v[0], v[0]])
+            elif len(v) == 2:
+                self.__dict__[name] = mat(v)
+            else:
+                raise ValueError;
+
+        elif name == "qlim":
             v = arg2array(value)
             
             if len(v) == 1:
@@ -285,14 +294,8 @@ class Link:
             else:
                 raise ValueError;
 
-        elif name == "qlim":
-            v = arg2array(value);
-            if len(v) == 2:
-                self.__dict__[name] = mat(v);
-            else:
-                raise ValueError
         else:
-            raise NameError, "Unknown attribute <%s> of link" % name
+            raise NameError("Unknown attribute <%s> of link" % name)
 
 
 #   LINK.islimit(q) return if limit is exceeded: -1, 0, +1
@@ -302,7 +305,7 @@ class Link:
             - -1 if C{q} is less than the lower limit
             - 0 if C{q} is within the limits
             - +1 if C{q} is greater than the high limit
-        
+
         @type q: number
         @param q: Joint coordinate
         @rtype: -1, 0, +1
@@ -318,13 +321,13 @@ class Link:
         Compute the transformation matrix for this link.  This is a function
         of kinematic parameters, the kinematic model (DH or MDH) and the joint
         coordinate C{q}.
-        
+
         @type q: number
         @param q: joint coordinate
         @rtype: homogeneous transformation
         @return: Link transform M{A(q)}
         """
-        
+
         an = self.A
         dn = self.D
         theta = self.theta
