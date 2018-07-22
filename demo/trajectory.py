@@ -1,30 +1,36 @@
-import robot.parsedemo as p;
+# Copyright (C) 1993-2013, by Peter I. Corke
+
+import _robot
+from robot import parsedemo as p
 import sys
 
-print sys.modules
 
 if __name__ == '__main__':
 
     s = '''
+    help(jtraj)
+    
 # First we will define some joint coordinates
     from robot.puma560 import *
 
-# The path will move the robot from its zero angle pose to the upright (or 
-# READY) pose.
+# The path will move the robot from its zero angle pose to the upright
+# (or READY) pose.
 #
 # First create a time vector, completing the motion in 2 seconds with a
 # sample interval of 56ms.
     t = arange(0, 2, 0.056) 	% generate a time vector
-pause % hit any key to continue
+    
+pause % press any key to continue
 #
 # A polynomial trajectory between the 2 poses is computed using jtraj()
-#
-   (q, qd, qdd) = jtraj(qz, qr, t);
-pause % hit any key to continue
 
+   (q, qd, qdd) = jtraj(qz, qr, t);
+   
+pause % press any key to continue
 #
 # For this particular trajectory most of the motion is done by joints 2 and 3,
 # and this can be conveniently plotted using standard MATLAB operations
+    figure(1)
     subplot(2,1,1);
     plot(t, q[:,1]);
     title('Theta');
@@ -34,7 +40,7 @@ pause % hit any key to continue
     plot(t, q[:,2]);
     xlabel('Time (s)');
     ylabel('Joint 3 (rad)');
-    show();
+    show();   % close plot figure window to continue
 
 #
 # We can also look at the velocity and acceleration profiles.  We could 
@@ -44,7 +50,7 @@ pause % hit any key to continue
     (q, qd, qdd) = jtraj(qz, qr, t);
 #
 #  which can then be plotted as before
-
+    figure(2)
     subplot(2,1,1);
     plot(t, qd[:,1]);
     title('Velocity');
@@ -65,7 +71,8 @@ pause % hit any key to continue
     plot(t, qdd[:,3]);
     xlabel('Time (s)');
     ylabel('Joint 3 accel (rad/s2)');
-
+    show();  % close plot figure window to continue
 '''
 
-    p.parsedemo(s);
+    p.parsedemo(s)
+    

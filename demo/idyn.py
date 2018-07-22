@@ -1,7 +1,9 @@
-import robot.parsedemo as p;
+# Copyright (C) 1993-2002, by Peter I. Corke
+
+import _robot
+from robot import parsedemo as p
 import sys
 
-print sys.modules
 
 if __name__ == '__main__':
 
@@ -9,77 +11,88 @@ if __name__ == '__main__':
 # First we will define a robot
     from robot.puma560 import *
 
-# Inverse dynamics computes the joint torques required to achieve the specified
-# state of joint position, velocity and acceleration.  
+# Inverse dynamics computes the joint torques required to achieve the 
+# specified state of joint position, velocity and acceleration.
 # The recursive Newton-Euler formulation is an efficient matrix oriented
-# algorithm for computing the inverse dynamics, and is implemented in the 
+# algorithm for computing the inverse dynamics, and is implemented in the
 # function rne().
 #
 # Inverse dynamics requires inertial and mass parameters of each link, as well
-# as the kinematic parameters.  This is achieved by augmenting the kinematic 
-# description matrix with additional columns for the inertial and mass 
+# as the kinematic parameters.  This is achieved by augmenting the kinematic
+# description matrix with additional columns for the inertial and mass
 # parameters for each link.
 #
 # For example, for a Puma 560 in the zero angle pose, with all joint velocities
 # of 5rad/s and accelerations of 1rad/s/s, the joint torques required are
 #
     tau = rne(p560, qz, 5*ones((1,6)), ones((1,6)))
-pause % any key to continue
+pause % press any key to continue
 
-# As with other functions the inverse dynamics can be computed for each point 
-# on a trajectory.  Create a joint coordinate trajectory and compute velocity 
-# and acceleration as well
-    t = arange(0, 2, 0.056); 		% create time vector
-    (q,qd,qdd) = jtraj(qz, qr, t); % compute joint coordinate trajectory
-    tau = rne(p560, q, qd, qdd); % compute inverse dynamics
+# As with other functions the inverse dynamics can be computed for each point
+# on a trajectory. Create a joint coordinate trajectory and compute velocity
+# and acceleration as well.
+    t = arange(0, 2, 0.056);        % create time vector
+    (q,qd,qdd) = jtraj(qz, qr, t);  % compute joint coordinate trajectory
+    tau = rne(p560, q, qd, qdd);    % compute inverse dynamics
 #
-#  Now the joint torques can be plotted as a function of time
-    plot(t, tau[:,0:2]);
+#  Now the joint torques can be plotted as a function of time.
+    plot(t, tau[:,0:3]);
+    title("Joint Torque");
     xlabel('Time (s)');
     ylabel('Joint torque (Nm)');
-    show()
+    legend(["Joint 1", "Joint 2", "Joint 3"], loc='upper right');
+    show();  % close plot figure window to continue
 
 #
-# Much of the torque on joints 2 and 3 of a Puma 560 (mounted conventionally) is
-# due to gravity.  That component can be computed using gravload()
+# Much of the torque on joints 2 and 3 of a Puma 560 (mounted conventionally)
+# is due to gravity. That component can be computed using gravload().
     clf();
     taug = gravload(p560, q);
-    plot(t, taug[:,0:2]);
+    plot(t, taug[:,1:3]);
+    title("Joint Gravity Load");
     xlabel('Time (s)');
     ylabel('Gravity torque (Nm)');
-    show()
+    legend(["Joint 2", "Joint 3"], loc='upper right');
+    show();  % close plot figure window to continue
 
-# Now lets plot that as a fraction of the total torque required over the 
-# trajectory
+# Now lets plot that as a fraction of the total torque required over
+# the trajectory.
     clf();
     subplot(2,1,1);
     plot(t, hstack((tau[:,1], taug[:,1])));
+    title("Fractional Joint Torque and Grav Load");
     xlabel('Time (s)');
     ylabel('Torque on joint 2 (Nm)');
+    legend(["Torque", "Grav Load"], loc='upper right');
     subplot(2,1,2);
     plot(t, hstack((tau[:,2], taug[:,2])));
     xlabel('Time (s)');
     ylabel('Torque on joint 3 (Nm)');
-pause % any key to continue
+    legend(["Torque", "Grav Load"], loc='center');
+    show(); % close plot figure window to continue
+pause % press any key to continue
 #
-# The inertia seen by the waist (joint 1) motor changes markedly with robot 
-# configuration.  The function inertia() computes the manipulator inertia matrix
+# The inertia seen by the waist (joint 1) motor changes markedly with robot
+# configuration. The function inertia() computes the manipulator inertia matrix
 # for any given configuration.
 #
-#  Let's compute the variation in joint 1 inertia, that is M(1,1), as the 
-# manipulator moves along the trajectory (this may take a few seconds)
+# Let's compute the variation in joint 1 inertia, that is M(1,1), as the
+# manipulator moves along the trajectory (this may take a few seconds).
     M = inertia(p560, q);
     M11 = array([m[0,0] for m in M]);
     clf();
     plot(t, M11);
+    title("Joint 1 Inertia");
     xlabel('Time (s)');
-    ylabel('Inertia on joint 1 (kgms2)')
+    ylabel('Inertia on joint 1 (kgms2)');
+    show();  % close plot figure window to continue
 # Clearly the inertia seen by joint 1 varies considerably over this path.
-# This is one of many challenges to control design in robotics, achieving 
-# stability and high-performance in the face of plant variation.  In fact 
+# This is one of many challenges to control design in robotics, achieving
+# stability and high-performance in the face of plant variation.  In fact
 # for this example the inertia varies by a factor of
     max(M11)/min(M11)
-pause
+pause % press any key to continue
 '''
 
-    p.parsedemo(s);
+    p.parsedemo(s)
+

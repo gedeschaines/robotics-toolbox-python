@@ -2,22 +2,27 @@ Some tutorial/demos in increasing order of complexity.
 
 transform.py    transforms and quaternions
 trajectory.py   trajectories
+animation.py    animations
 fkine.py        forward kinematics
 jacobian.py     Jacbians
-ikine.py        inverse dynamics, RNE etc
-idyn.py         inverse dynamics
+ikine.py        inverse dynamics
+idyn.py         inverse dynamics, RNE etc.
+fdyn.py         forward dynamics
 
-To run them
+To run a DEMO from a command shell, invoke with python as
 
   % python DEMO.py
-
-they often pause with a 'more' prompt, to stop the text scrolling off
-the screen.
+  
+or execute from within IPython as
+  
+  % ipython --pylab
+  
+  In[1]: run DEMO.py
+  
+The scripts often pause with a 'more' prompt to stop the text scrolling 
+off the screen. Also, when a plot figure is displayed, the figure window
+may need to be closed before the script execution continues.
 
 These are command line apps, but could probably be spiffed up with a
 wxPython interface.
-
-----
-fdyn.py         forward dynamics, not yet ported to Python
-animation.py    animations, not yet ported to Python
 

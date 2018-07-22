@@ -6,10 +6,10 @@
 #
 # $Revision: 1.2 $
 
-import robot.parsedemo as p;
+import _robot
+from robot import parsedemo as p
 import sys
 
-print sys.modules
 
 if __name__ == '__main__':
 
@@ -23,23 +23,27 @@ if __name__ == '__main__':
 
 #  A pure translation of 0.5m in the X direction is represented by
     transl(0.5, 0.0, 0.0)
+    
+pause % press any key to continue    
 #
-# a rotation of 90degrees about the Y axis by
+# a rotation of 90 degrees about the Y axis by
     roty(pi/2)
 #
-# and a rotation of -90degrees about the Z axis by
+# and a rotation of -90 degrees about the Z axis by
     rotz(-pi/2)
+    
+pause % press any key to continue    
 #
-#  these may be concatenated by multiplication
+# these may be concatenated by multiplication
     t = transl(0.5, 0.0, 0.0) * troty(pi/2) * trotz(-pi/2)
-
 #
 # If this transformation represented the origin of a new coordinate frame 
 # with respect to the world frame origin (0, 0, 0), that new origin would 
 # be given by
 
-        t * matrix([0, 0, 0, 1]).T
-pause % any key to continue
+    t * matrix([0, 0, 0, 1]).T
+    
+pause % press any key to continue
 #
 # the orientation of the new coordinate frame may be expressed in terms of
 # Euler angles
@@ -47,13 +51,16 @@ pause % any key to continue
 #
 # or roll/pitch/yaw angles
     tr2rpy(t)
-pause % any key to continue
+    
+pause % press any key to continue
 #
 # It is important to note that transform multiplication is in general not 
 # commutative as shown by the following example
     rotx(pi/2) * rotz(-pi/8)
     rotz(-pi/8) * rotx(pi/2)
+    
 # which are quite different.
 '''
 
-    p.parsedemo(s);
+    p.parsedemo(s)
+
