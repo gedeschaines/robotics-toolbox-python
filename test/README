@@ -1,5 +1,15 @@
 Test scripts:
 
 
-python primitives.py      test all transform/quaternion operations
-python arm.py             test arm kine/dyn functions
+python test-transform.py    - test all transform/quaternion operations
+python arm.py               - test Link and Robot class objects
+python dynamics.py          - test dynamics primitives
+python jacobian             - test Jacobian primitives
+python kinematics.py        - test kinematics primitives
+python kine_p560s.py        - test fwd/inv kinematics for Puma 560 (standard)
+python kine_p560m.py        - test fwd/inv kinematics for Puma 560 (modified)
+python kine_stanf.py        - test fwd/inv kinematics for Stanford arm
+python manip.py             - test manipulability
+python quaternion.py        - test Quaternion class primitives
+python trajectory.py        - test joint and cartesian trajectory transformations
+python transform.py         - test utility and transform primitives

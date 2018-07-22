@@ -1,9 +1,11 @@
-'''Test quaternions and tranform primitives'''
+""" Robotics Toolbox for Python -- Test utility, transform and quaternion primitives
+"""
 
-from robot import *
+import _robot
+from robot.testparser import *
+
 
 tests = '''
-
 # utility
 v1 = mat([0, 1, 0]);
 v2 = mat([0, 0, 1]);
@@ -24,7 +26,6 @@ rotz(.1)
 
 r = rotz(0.1)
 r2t(r)
-
 
 trotx(.1)
 troty(.1)
@@ -151,15 +152,8 @@ q1
 q1 *= 2
 q1
 q2
-''';
+'''
 
-for line in tests.split('\n'):
-    if line == '' or line[0] in '%#':
-        continue;
-    print '::', line;
-    if '=' in line:
-        exec line;
-    else:
-        print eval(line);
-    print
+if __name__ == "__main__" :
 
+    testparser(tests)

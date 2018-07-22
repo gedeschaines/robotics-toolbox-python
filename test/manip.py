@@ -1,34 +1,32 @@
-'''Test manipulability'''
+""" Robotics Toolbox for Python -- Test manipulability
+"""
 
-from robot import *
+import _robot
+from robot.testparser import *
+
+
+tests = '''
+echo off
 from robot.puma560 import *
+echo on
 
-set_printoptions(precision=4, suppress=True);
-
-tests = """
 p560
 
 q = qn
-manipulability(p560, q)
-manipulability(p560, q, 'yoshi')
-manipulability(p560, q, 'y')
-manipulability(p560, q, 'asada')
-manipulability(p560, q, 'a')
-manipulability(p560, q, 'z')
+manipblty(p560, q)
+manipblty(p560, q, 'yoshi')
+manipblty(p560, q, 'y')
+manipblty(p560, q, 'asada')
+manipblty(p560, q, 'a')
+manipblty(p560, q, 'z')
 
 qq = vstack((q, q, q, q))
 qq
-manipulability(p560, qq, 'yoshi')
-manipulability(p560, qq, 'asada')
-""";
+manipblty(p560, qq, 'yoshi')
+manipblty(p560, qq, 'asada')
+'''
 
-for line in tests.split('\n'):
-    if line == '' or line[0] in '%#':
-        continue;
-    print '::', line;
-    if '=' in line:
-        exec line;
-    else:
-        print eval(line);
-    print
+if __name__ == "__main__" :
+
+    testparser(tests)
 

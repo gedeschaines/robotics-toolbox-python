@@ -1,12 +1,18 @@
-'''Test quaternions and tranform primitives'''
+""" Robotics Toolbox for Python -- Test utility and transform primitives
+"""
 
-from robot import *
+import _robot
+from robot.testparser import *
+
 
 tests = '''
+echo on
+
 # utility
 v1 = mat([0, 1, 0]);
 v2 = mat([0, 0, 1]);
 unit(v1+v2)
+
 crossp(v1, v2)
 crossp(v1.T, v2)
 crossp(v1, v2.T)
@@ -23,7 +29,6 @@ rotz(.1)
 
 r = rotz(0.1)
 r2t(r)
-
 
 trotx(.1)
 troty(.1)
@@ -73,6 +78,7 @@ tr2eul(te)
 rpy2r(.1, .2, .3)
 rpy2r( [.1, .2, .3] )
 rpy2r( mat([.1, .2, .3]) )
+rpy2r( mat([[.1, .2, .3],[.4, .5, .6]]) )
 rpy2tr(.1, .2, .3)
 rpy2tr( [.1, .2, .3] )
 rpy2tr( mat([.1, .2, .3]) )
@@ -94,15 +100,15 @@ skew(m)
 skew( mat([.1, .2 ,.3, .4, .5, .6]) )
 m = skew( mat([.1, .2 ,.3, .4, .5, .6]) )
 skew(m)
-''';
 
-for line in tests.split('\n'):
-    if line == '' or line[0] in '%#':
-        continue;
-    print '::', line;
-    if '=' in line:
-        exec line;
-    else:
-        print eval(line);
-    print
+R = rotx(0.2);
+t = array([1., 2., 3.], ndmin=2).T;
+T = rt2tr(R, t);
+H = vstack( [ hstack([R,t]), array([0., 0., 0., 1.]) ] );
+assertEqual(T,H)
+'''
+
+if __name__ == "__main__" :
+
+    testparser(tests)
 

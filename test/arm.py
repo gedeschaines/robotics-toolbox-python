@@ -1,22 +1,15 @@
-'''Test Link and Robot objects'''
+""" Robotics Toolbox for Python -- Test rblot
+"""
 
-from robot import *
-from robot.puma560 import *
+import _robot
+from robot.testparser import *
 
-set_printoptions(precision=4, suppress=True);
 
 tests = '''
-l = Link(1, 2, 3, 4, 0, Link.LINK_DH)
-l
-l = Link(1, 2, 3, 4, 1, Link.LINK_DH)
-l
+set_printoptions(precision=4, suppress=True);
 
-l = Link(1, 2, 3, 4, 0, Link.LINK_MDH)
-l
-l = Link(1, 2, 3, 4, 1, Link.LINK_MDH)
-l
+from robot.puma560 import *
 
-l = Link(1, 2, 3, 4, 0, Link.LINK_DH)
 l.display()
 l.offset = 9
 l.m = 10
@@ -80,17 +73,9 @@ p560.tool
 p560.gravity = [1,2,3]
 p560.gravity
 
+'''
 
+if __name__ == "__main__" :
 
-''';
-
-for line in tests.split('\n'):
-    if line == '' or line[0] in '%#':
-        continue;
-    print '::', line;
-    if '=' in line:
-        exec line;
-    else:
-        print eval(line);
-    print
+    testparser(tests)
 
