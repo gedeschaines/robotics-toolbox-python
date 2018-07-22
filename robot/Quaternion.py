@@ -3,18 +3,18 @@ Quaternion class.
 
 Python implementation by: Luis Fernando Lara Tobar and Peter Corke.
 Based on original Robotics Toolbox for Matlab code by Peter Corke.
-Permission to use and copy is granted provided that acknowledgement of
-the authors is made.
+Permission to use and copy is granted provided that acknowledgement
+of the authors is made.
 
 @author: Luis Fernando Lara Tobar and Peter Corke
 """
 
+# Copyright (C) 1999-2002, by Peter I. Corke
+    
 from numpy import *
-from utility import *
-import transform as T
+from .utility import *
 import copy
 
-# Copyright (C) 1999-2002, by Peter I. Corke
 
 class quaternion:
     """A quaternion is a compact method of representing a 3D rotation that has
@@ -36,7 +36,7 @@ class quaternion:
     Arithmetic operators are also overloaded to allow quaternion multiplication,
     division, exponentiaton, and quaternion-vector multiplication (rotation).
     """
-
+    
     def __init__(self, *args):
         '''
 Constructor for quaternion objects:
@@ -50,8 +50,8 @@ Constructor for quaternion objects:
     - q = quaternion(s, v)    from 4 elements
 '''
 
-        self.vec = [];
-        
+        self.vec = []
+
         if len(args) == 0:
                 # default is a null rotation
                 self.s = 1.0
@@ -59,65 +59,65 @@ Constructor for quaternion objects:
 
         elif len(args) == 1:
             arg = args[0]
-            
+
             if isinstance(arg, quaternion):
             # Q = QUATERNION(q) from another quaternion
                 self.s = arg.s
                 self.v = arg.v
                 return
-                
-            if type(arg) is matrix:
+
+            if type(arg) is matrix or type(arg) is ndarray:
                 # Q = QUATERNION(R) from a 3x3
                 if (arg.shape == (3,3)):
-                    self.tr2q(arg);
-                    return;
+                    self.tr2q(arg)
+                    return
 
                 # Q = QUATERNION(R) from a 4x4
                 if (arg.shape == (4,4)):
-                    self.tr2q(arg[0:3,0:3]);
-                    return;
-                    
+                    self.tr2q(arg[0:3,0:3])
+                    return
+
             # some kind of list, vector, scalar...
-            
+
             v = arg2array(arg);
-            
+
             if len(v) == 4:
                 # Q = QUATERNION([s v1 v2 v3]) from 4 elements
-                self.s = v[0];
-                self.v = mat(v[1:4]);
-                
+                self.s = v[0]
+                self.v = mat(v[1:4])
+
             elif len(v) == 3:
                 self.s = 0
-                self.v = mat(v[0:3]);
+                self.v = mat(v[0:3])
 
             elif len(v) == 1:
                 # Q = QUATERNION(s) from a scalar
                 #Q = QUATERNION(s)               from a scalar
-                self.s = v[0];
+                self.s = v[0]
                 self.v = mat([0, 0, 0])
 
         elif len(args) == 2:
             # Q = QUATERNION(v, theta) from vector plus angle
-            # Q = quaternion(s, v);
+            # Q = quaternion(s, v)
 
-            a1 = arg2array(args[0]);
-            a2 = arg2array(args[1]);
-            
+            a1 = arg2array(args[0])
+            a2 = arg2array(args[1])
+
             if len(a1) == 1 and len(a2) == 3:
                 # s, v
-                self.s = a1[0];
-                self.v = mat(a2);
+                self.s = a1[0]
+                self.v = mat(a2)
             elif len(a1) == 3 and len(a2) == 1:
                 # v, theta
-                self.s = a2[0];
-                self.v = mat(a1);
+                self.s = a2[0]
+                self.v = mat(a1)
 
         elif len(args) == 4:
-            self.s = args[0];
+            self.s = args[0]
             self.v = mat(args[1:4])
 
         else:
-                print "error"
+                print("error")
                 return None
 
     def __repr__(self):
@@ -218,15 +218,15 @@ Constructor for quaternion objects:
     def __mul__(self, q2):
         '''
         Quaternion product. Several cases are handled
-        
+
             - q * q   quaternion multiplication
             - q * c   element-wise multiplication by constant
             - q * v   quaternion-vector multiplication q * v * q.inv();
         '''
         qr = quaternion();
-        
+
         if isinstance(q2, quaternion):
-                
+
             #Multiply unit-quaternion by unit-quaternion
             #
             #   QQ = qqmul(Q1, Q2)
@@ -240,7 +240,7 @@ Constructor for quaternion objects:
             qr.v = s1*v2 + s2*v1 + cross(v1,v2)
 
         elif type(q2) is matrix:
-                
+
             # Multiply vector by unit-quaternion
             #
             #   Rotate the vector V by the unit-quaternion Q.
@@ -260,7 +260,7 @@ Constructor for quaternion objects:
     def __rmul__(self, c):
         '''
         Quaternion product. Several cases are handled
- 
+
             - c * q   element-wise multiplication by constant
         '''
         qr = quaternion()
@@ -268,17 +268,17 @@ Constructor for quaternion objects:
         qr.v = self.v * c
 
         return qr
-        
+
     def __imul__(self, x):
         '''
         Quaternion in-place multiplication
-        
+
             - q *= q2
-            
+
         '''
-        
+
         if isinstance(x, quaternion):
-            s1 = self.s;   
+            s1 = self.s;
             v1 = self.v
             s2 = x.s
             v2 = x.v
@@ -293,18 +293,31 @@ Constructor for quaternion objects:
 
         return self;
 
-
-    def __div__(self, q):
+    def __div__(self, x):  # for Python 2
         '''Return quaternion quotient.  Several cases handled:
             - q1 / q2      quaternion division implemented as q1 * q2.inv()
             - q1 / c       element-wise division
         '''
-        if isinstance(q, quaternion):
+        if isinstance(x, quaternion):
             qr = quaternion()
-            qr = self * q.inv()
-        elif isscalar(q):
-            qr.s = self.s / q
-            qr.v = self.v / q
+            qr = self * x.inv()
+        elif isscalar(x):
+            qr.s = self.s / x
+            qr.v = self.v / x
+
+        return qr
+        
+    def __truediv__(self, x):  # for Python 3
+        '''Return quaternion quotient.  Several cases handled:
+            - q1 / q2      quaternion division implemented as q1 * q2.inv()
+            - q1 / c       element-wise division
+        '''
+        if isinstance(x, quaternion):
+            qr = quaternion()
+            qr = self * x.inv()
+        elif isscalar(x):
+            qr.s = self.s / x
+            qr.v = self.v / x
 
         return qr
 
@@ -314,14 +327,14 @@ Constructor for quaternion objects:
         Quaternion exponentiation.  Only integer exponents are handled.  Negative
         integer exponents are supported.
         '''
-        
+
         # check that exponent is an integer
         if not isinstance(p, int):
             raise ValueError
-        
+
         qr = quaternion()
         q = quaternion(self);
-        
+
         # multiply by itself so many times
         for i in range(0, abs(p)):
             qr *= q
@@ -337,33 +350,33 @@ Constructor for quaternion objects:
         Return a copy of the quaternion.
         """
         return copy.copy(self);
-                
+
     def inv(self):
         """Return the inverse.
-        
+
         @rtype: quaternion
         @return: the inverse
         """
-        
+
         qi = quaternion(self);
         qi.v = -qi.v;
-        
-        return qi;
 
+        return qi;
 
 
     def norm(self):
         """Return the norm of this quaternion.
-        
+
         @rtype: number
         @return: the norm
         """
-        
+
         return linalg.norm(self.double())
+
 
     def double(self):
         """Return the quaternion as 4-element vector.
-        
+
         @rtype: 4-vector
         @return: the quaternion elements
         """
@@ -372,11 +385,11 @@ Constructor for quaternion objects:
 
     def unit(self):
         """Return an equivalent unit quaternion
-        
+
         @rtype: quaternion
         @return: equivalent unit quaternion
         """
-        
+
         qr = quaternion()
         nm = self.norm()
 
@@ -387,17 +400,18 @@ Constructor for quaternion objects:
 
 
     def tr(self):
-        """Return an equivalent rotation matrix.
-        
-        @rtype: 4x4 homogeneous transform
-        @return: equivalent rotation matrix
-        """
+        """Return an equivalent 4x4 homogeneous transformation matrix.
 
-        return T.r2t( self.r() )
+        @rtype: 4x4 homogeneous transform
+        @return: equivalent transformation matrix
+        """
+        from robot.transform import r2t
+        
+        return r2t( self.r() )
 
     def r(self):
-        """Return an equivalent rotation matrix.
-        
+        """Return an equivalent 3x3 rotation matrix.
+
         @rtype: 3x3 orthonormal rotation matrix
         @return: equivalent rotation matrix
         """
@@ -411,7 +425,7 @@ Constructor for quaternion objects:
                        [2*(x*y+s*z),    1-2*(x**2+z**2),    2*(y*z-s*x)],
                        [2*(x*z-s*y),    2*(y*z+s*x),    1-2*(x**2+y**2)]])
 
-    
+
 
 #QINTERP Interpolate rotations expressed by quaternion objects
 #
