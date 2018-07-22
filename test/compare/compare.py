@@ -21,7 +21,7 @@ The process:
 
 from robot import *;
 
-print "Compare Python and Matlab RNE implementations"
+print("Compare Python and Matlab RNE implementations")
 
 # load the (q,qd,qdd) data
 path = loadtxt('path.dat');
@@ -35,7 +35,7 @@ tau = rne(p560, path);
 
 diff = matlab_dh - tau;
 #print diff
-print "RNE DH, error norm =", linalg.norm(diff, 'fro')
+print("RNE DH, error norm = %s" % linalg.norm(diff, 'fro'))
 
 #############
 
@@ -48,4 +48,5 @@ tau = rne(p560m, path);
 
 diff = matlab_mdh - tau;
 #print diff
-print "RNE MDH, error norm =", linalg.norm(diff, 'fro')
+print("RNE MDH, error norm = %s" % linalg.norm(diff, 'fro'))
+
