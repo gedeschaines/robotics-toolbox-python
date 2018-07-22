@@ -3,8 +3,8 @@ Jacobian matrix operations.
 
 Python implementation by: Luis Fernando Lara Tobar and Peter Corke.
 Based on original Robotics Toolbox for Matlab code by Peter Corke.
-Permission to use and copy is granted provided that acknowledgement of
-the authors is made.
+Permission to use and copy is granted provided that acknowledgement
+of the authors is made.
 
 @author: Luis Fernando Lara Tobar and Peter Corke
 """
@@ -14,6 +14,7 @@ from robot.utility import *
 from robot.transform import *
 from robot.kinematics import *
 from numpy.linalg import norm
+
 
 def jacob0(robot, q):
     """
@@ -31,12 +32,10 @@ def jacob0(robot, q):
     @return: Manipulator Jacobian
     @see: L{jacobn}, L{diff2tr}, L{tr2diff}
     """
-
-
     q = mat(q)
     Jn = jacobn(robot, q) # Jacobian from joint to wrist space
     #   convert to Jacobian in base coordinates
-    Tn = fkine(robot,q) # end-effector transformation
+    Tn = fkine(robot, q) # end-effector transformation
     R = t2r(Tn)
     return concatenate( ( concatenate( (R,zeros((3,3))) ,1) , concatenate( (zeros((3,3)),R) ,1) ))*Jn
 
@@ -87,7 +86,6 @@ def jacobn(robot, q):
     return J
 
 
-
 def tr2jac(t):
     """
     Compute a Jacobian to map differentials motion between frames.
@@ -104,3 +102,4 @@ def tr2jac(t):
         concatenate((t[0:3,1].T, crossp(t[0:3,3],t[0:3,1]).T),1),
         concatenate((t[0:3,2].T, crossp(t[0:3,3],t[0:3,2]).T),1),
         concatenate((zeros((3,3)),t[0:3,0:3].T),1) ))
+        
