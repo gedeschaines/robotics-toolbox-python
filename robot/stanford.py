@@ -17,7 +17,7 @@ is known, so gear ratios set to 1.
 Also define the vector qz which corresponds to the zero joint
 angle configuration.
 
-@see: robot, puma560, puma560akb, twolink.
+@see: L{Robot}, L{puma560}, L{puma560akb}, L{phantomx}, L{fourlink}, L{twolink}.
 
 Python implementation by: Luis Fernando Lara Tobar and Peter Corke.
 Based on original Robotics Toolbox for Matlab code by Peter Corke.
@@ -28,17 +28,22 @@ the authors is made.
 """
 
 from numpy import *
-from Link import *
-from Robot import *
+from robot.Link import *
+from robot.Robot import *
+
+print("Creating a Stanford arm as stanf")
 
 L = []
-L.append(Link(alpha=-pi/2, A=0, theta=0, D=0.412, sigma=0))
-L.append(Link(alpha=pi/2, A=0, theta=0, D=0.154, sigma=0))
-L.append(Link(alpha=0, A=0, theta=-pi/2, D=0, sigma=1))
-L.append(Link(alpha=-pi/2, A=0, theta=0, D=0, sigma=0))
-L.append(Link(alpha=pi/2, A=0, theta=0, D=0, sigma=0))
-L.append(Link(alpha=0, A=0, theta=0, D=0.263, sigma=0))
 
+# link DH parameters
+L.append(Link(alpha=-pi/2, A=0, theta=0,     D=0.412, sigma=0))
+L.append(Link(alpha=pi/2,  A=0, theta=0,     D=0.154, sigma=0))
+L.append(Link(alpha=0,     A=0, theta=-pi/2, D=0,     sigma=1))
+L.append(Link(alpha=-pi/2, A=0, theta=0,     D=0,     sigma=0))
+L.append(Link(alpha=pi/2,  A=0, theta=0,     D=0,     sigma=0))
+L.append(Link(alpha=0,     A=0, theta=0,     D=0.263, sigma=0))
+
+# link mass
 L[0].m = 9.29
 L[1].m = 5.01
 L[2].m = 4.25
@@ -46,20 +51,25 @@ L[3].m = 1.08
 L[4].m = 0.63
 L[5].m = 0.51
 
-L[0].r = mat([0,	.0175,	-0.1105])
-L[1].r = mat([0,	-1.054,	0])
-L[2].r = mat([0,	0,	-6.447])
-L[3].r = mat([0,	0.092,	-0.054])
-L[4].r = mat([0,	0,	0.566])
-L[5].r = mat([0,	0,	1.554])
+# link COG wrt link coordinate frame
+#               rx       ry       rz
+L[0].r = mat([  0.0,     0.0175, -0.1105])
+L[1].r = mat([  0.0,    -1.054,   0.0   ])
+L[2].r = mat([  0.0,     0.0,    -6.447 ])
+L[3].r = mat([  0.0,     0.092,  -0.054 ])
+L[4].r = mat([  0.0,     0.566,   0.003 ])
+L[5].r = mat([  0.0,     0.0,     1.554 ])
 
-L[0].I = mat([0.276,	0.255,	0.071,	0,	0,	0])
-L[1].I = mat([0.108,	0.018,	0.100,	0,	0,	0])
-L[2].I = mat([2.51,	2.51,	0.006,	0,	0,	0])
-L[3].I = mat([0.002,	0.001,	0.001,	0,	0,	0])
-L[4].I = mat([0.003,	0.003,	0.0004,	0,	0,	0])
-L[5].I = mat([0.013,	0.013,	0.0003,	0,	0,	0])
+# link inertia matrix about link COG
+#              Ixx       Iyy       Izz     Ixy  Iyz  Ixz
+L[0].I = mat([ 0.276,    0.255,    0.071,    0,   0,   0])
+L[1].I = mat([ 0.108,    0.018,    0.100,    0,   0,   0])
+L[2].I = mat([ 2.51,     2.51,     0.006,    0,   0,   0])
+L[3].I = mat([ 0.002,    0.001,    0.001,    0,   0,   0])
+L[4].I = mat([ 0.003,    0.0004,   0.0,      0,   0,   0])
+L[5].I = mat([ 0.013,    0.013,    0.0003,   0,   0,   0])
 
+# actuator motor inertia (motor referred)
 L[0].Jm = 0.953
 L[1].Jm = 2.193
 L[2].Jm = 0.782
@@ -67,13 +77,25 @@ L[3].Jm = 0.106
 L[4].Jm = 0.097
 L[5].Jm = 0.020
 
-L[0].G = 1
-L[1].G = 1
-L[2].G = 1
-L[3].G = 1
-L[4].G = 1
-L[5].G = 1
+# actuator gear ratio
+L[0].G = 1.0
+L[1].G = 1.0
+L[2].G = 1.0
+L[3].G = 1.0
+L[4].G = 1.0
+L[5].G = 1.0
 
-qz = [0,0,0,0,0,0]
+# viscous friction (motor referenced)
+# unknown
 
-stanf = Robot(links=L, name='Stanford arm')
+# Coulomb friction (motor referenced)
+# unknown
+
+#
+# some useful poses
+#
+qz = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # zero angles, vertical pose
+
+stanf = Robot(L, name='Stanford arm')
+stanf.set_handle('p3D',1)
+stanf.set_handle('mag', 0.25)
