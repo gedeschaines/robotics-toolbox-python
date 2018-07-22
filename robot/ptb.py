@@ -56,7 +56,7 @@ class ptb:
 #   trinterp    - interpolate transform s
 #   
 # Graphics
-#   drivebot    - drive a graphical  robot 
+#   drivebot    - drive a graphical robot 
 #   plot        - plot/animate robot 
 #   
 # Other
