@@ -856,7 +856,7 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
             else:
                 rbplotRbots2D.update({fign: [robot.name]})
             # create axes for drawing 2D artists
-            ax = fig.add_subplot(111, autoscale_on=False)
+            ax = fig.add_subplot(111, autoscale_on=False)  # returns AxesSubplot
             ax.set_title(title)
             ax.set_xlabel('X')
             ax.set_ylabel('Y')
@@ -883,7 +883,7 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
             else:
                 rbplotRbots3D.update({fign: [robot.name]})
             # create axes for drawing 3D artists
-            ax = fig.add_subplot(111, projection='3d')
+            ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
             ax.set_title(title)
             ax.set_xlabel('X')
             ax.set_ylabel('Y')
@@ -977,7 +977,7 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
     blit = False
     if Record == 0:
         #blit = True  # blit results in image loss after resize for Matplotlib v1.5.1+
-        pass
+        pass          # when animation init_func erases lines and text.
 
     if Plot3D == 0:
         _rbinit2d()
@@ -1135,7 +1135,7 @@ def trplot(T, fig=None, **opts):
     if (fig is None) or not plt.fignum_exists(fig.number):
         # This will create a new figure unless hold 'on'
         fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
         # lines in order to be drawn
         line1 = Line3D([], [], [], color='r', ls='-', lw=2.0,  # x-axis
                        marker=' ', mew=1.0, mec='r', mfc='r')
@@ -1143,7 +1143,13 @@ def trplot(T, fig=None, **opts):
                        marker=' ', mew=1.0, mec='g', mfc='g')
         line3 = Line3D([], [], [], color='b', ls='-', lw=2.0,  # z-axis
                        marker=' ', mew=1.0, mec='b', mfc='b')
-        time_text = ax.text(-1.0, -1.0, 1.5, '', )
+        # allocate artists for xyz axes labels
+        xaxis_lbl = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
+        yaxis_lbl = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
+        zaxis_lbl = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+        # allocate artist for frame time, but only display if animating
+        time_text = ax.text3D(-1.0, -1.0, 1.5, '')
+        # set figure subplot title, axis labels and limits
         ax.set_title(title)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -1153,18 +1159,30 @@ def trplot(T, fig=None, **opts):
         ax.set_zlim3d([-1.0, 1.0])
         # ax.set_aspect('equal')
         ax.grid()
+        # store allocated artists in global arrays 
         ax.add_line(line1)
         ax.add_line(line2)
         ax.add_line(line3)
         tranim_lines3D = [line1, line2, line3]
-        tranim_text3D = [time_text]
-
+        tranim_text3D = [xaxis_lbl, yaxis_lbl, zaxis_lbl, time_text]
+        
+    # draw orthogonal xyz axes
     tranim_lines3D[0].set_data([0, x[0, 0]], [0, x[0, 1]])  # x-axis
     tranim_lines3D[0].set_3d_properties([0, x[0, 2]])
     tranim_lines3D[1].set_data([0, y[0, 0]], [0, y[0, 1]])  # y-axis
     tranim_lines3D[1].set_3d_properties([0, y[0, 2]])
     tranim_lines3D[2].set_data([0, z[0, 0]], [0, z[0, 1]])  # z-axis
     tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
+    
+    # draw orthogonal xyz axes labels
+    ax = tranim_text3D[0].get_axes()  # get axes instance the text3d
+    if ax is not None:                # artists reside in
+        for i in range(0,3):
+            tranim_text3D[i].remove()
+        tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
+        tranim_text3D[1] = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
+        tranim_text3D[2] = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+        
     fig.canvas.draw()
 
     return fig
@@ -1174,16 +1192,19 @@ def _trinit3d():
     """
     Initialization function for 3D animation of frame transforms.
     """
-    global tranim_lines3D
+    global tranim_lines3D, tranim_text3D
 
-    for l in tranim_lines3D:
-        l.set_data([], [])
-        l.set_3d_properties([])
+    for a in tranim_lines3D:
+        a.set_data([], [])
+        a.set_3d_properties([])
+        
+    for a in tranim_text3D:
+        a.set_text('')
+        
+    return tranim_lines3D + tranim_text3D
 
-    return tranim_lines3D
 
-
-def _tranim3d(nf, Ttraj, tranim_lines3D):
+def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     """
     Callback function for 3D animation of frame transforms.
 
@@ -1210,14 +1231,27 @@ def _tranim3d(nf, Ttraj, tranim_lines3D):
     y = q * np.mat([0.0, 1.0, 0.0])
     z = q * np.mat([0.0, 0.0, 1.0])
 
+    # draw orthogonal xyz axes
     tranim_lines3D[0].set_data([0, x[0, 0]], [0, x[0, 1]])  # x-axis
     tranim_lines3D[0].set_3d_properties([0, x[0, 2]])
     tranim_lines3D[1].set_data([0, y[0, 0]], [0, y[0, 1]])  # y-axis
     tranim_lines3D[1].set_3d_properties([0, y[0, 2]])
     tranim_lines3D[2].set_data([0, z[0, 0]], [0, z[0, 1]])  # z-axis
     tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
-
-    return tranim_lines3D
+    
+    # draw orthogonal xyz axes labels
+    ax = tranim_text3D[0].get_axes()  # get axes instance the text3d
+    if ax is not None:                # artists reside in
+        for i in range(0,3):
+            tranim_text3D[i].remove()
+        tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
+        tranim_text3D[1] = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
+        tranim_text3D[2] = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+    # representative frame time
+    time_str = 'time = %.3f' % (float(nf)/fps)
+    tranim_text3D[3].set_text(time_str)
+    
+    return tranim_lines3D + tranim_text3D
 
 
 def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
@@ -1259,7 +1293,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
 
     @see: L{disclaimer_rtb}
     """
-    global tranim_lines3D
+    global tranim_lines3D, tranim_text3D
 
     T1 = None
     T2 = None
@@ -1346,10 +1380,11 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
     nframes=nsteps
     blit = False
     if rec == 0:
-        blit = True
+        #blit = True  # blit results in image loss after resize for Matplotlib v1.5.1+
+        pass          # when animation init_func erases lines and text.
 
-    anim = animation.FuncAnimation(fig, _tranim3d, fargs=(Ttraj, tranim_lines3D),
-                                   init_func=None,
+    anim = animation.FuncAnimation(fig, _tranim3d, fargs=(Ttraj, fps, tranim_lines3D, tranim_text3D),
+                                   init_func=_trinit3d,
                                    frames=nframes, blit=blit,
                                    interval=fps, repeat=False)
 
