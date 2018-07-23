@@ -86,7 +86,7 @@ pause % press any key to continue
 
 ### Not implemented.
 ###
-### drivebot(p560)  % Not implemented in RTB for Python as of July 8, 2018.
+### drivebot(p560)  % Not implemented in RTB for Python as of July 2018.
 ###
 
 # use the sliders to control the robot (in fact both views).  Hit the red
