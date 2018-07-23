@@ -131,8 +131,8 @@ from .Quaternion import *
 # import dynamics section
 from .dynamics import *
 
-# import ftrans section
-from .ftrans import *
+# import wtrans section
+from .wtrans import *
 
 # import plot section
 from .plot import *
