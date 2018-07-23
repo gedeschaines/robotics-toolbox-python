@@ -56,11 +56,11 @@ class Link:
     def __init__(self, alpha=0, A=0, theta=0, D=0, sigma=0, convention=LINK_DH):
         """
         L = LINK([alpha A theta D])
-        L =LINK([alpha A theta D sigma])
-        L =LINK([alpha A theta D sigma offset])
-        L =LINK([alpha A theta D], CONVENTION)
-        L =LINK([alpha A theta D sigma], CONVENTION)
-        L =LINK([alpha A theta D sigma offset], CONVENTION)
+        L = LINK([alpha A theta D sigma])
+        L = LINK([alpha A theta D sigma offset])
+        L = LINK([alpha A theta D], CONVENTION)
+        L = LINK([alpha A theta D sigma], CONVENTION)
+        L = LINK([alpha A theta D sigma offset], CONVENTION)
 
         If sigma or offset are not provided they default to zero.  Offset is a
         constant amount added to the joint angle variable before forward kinematics
@@ -161,7 +161,7 @@ class Link:
         """
         Return copy of this Link
         """
-        return copy.copy(self);
+        return copy.copy(self)
 
     def friction(self, qd):
         """
@@ -201,8 +201,7 @@ class Link:
         l2.Tc = array([0, 0])
         if all:
             l2.B = 0
-        return l2;
-
+        return l2
 
 # methods to set kinematic or dynamic parameters
 
@@ -241,7 +240,7 @@ class Link:
         """
 
         if value is None:
-            self.__dict__[name] = value;
+            self.__dict__[name] = value
             return;
 
         if name in self.fields:
@@ -249,11 +248,11 @@ class Link:
             if isinstance(value, (ndarray,matrix)) and value.shape != (1,1):
                 raise ValueError("Scalar required")
             if not isinstance(value, (int,float,int32,float64)):
-                raise ValueError;
+                raise ValueError
             self.__dict__[name] = value
 
         elif name == "r":
-            r = arg2array(value);
+            r = arg2array(value)
             if len(r) != 3:
                 raise ValueError("matrix required")
 
@@ -261,9 +260,9 @@ class Link:
 
         elif name == "I":
             if isinstance(value, matrix) and value.shape == (3,3):
-                self.__dict__[name] = value;
+                self.__dict__[name] = value
             else:
-                v = arg2array(value);
+                v = arg2array(value)
                 if len(v) == 3:
                     self.__dict__[name] = mat(diag(v))
                 elif len(v) == 6:
@@ -282,7 +281,7 @@ class Link:
             elif len(v) == 2:
                 self.__dict__[name] = mat(v)
             else:
-                raise ValueError;
+                raise ValueError
 
         elif name == "qlim":
             v = arg2array(value)
@@ -292,14 +291,14 @@ class Link:
             elif len(v) == 2:
                 self.__dict__[name] = mat(v)
             else:
-                raise ValueError;
+                raise ValueError
 
         else:
             raise NameError("Unknown attribute <%s> of link" % name)
 
 
 #   LINK.islimit(q) return if limit is exceeded: -1, 0, +1
-    def islimit(self,q):
+    def islimit(self, q):
         """
         Check if joint limits exceeded.  Returns
             - -1 if C{q} is less than the lower limit
@@ -311,10 +310,19 @@ class Link:
         @rtype: -1, 0, +1
         @return: joint limit status
         """
-        if not self.qlim:
+        if self.qlim is None:
             return 0
 
         return (q > self.qlim[1,0]) - (q < self.qlim[0,0])
+
+    def isrevolute(self):
+        """
+        Query if link joint is revolute.
+        """
+        if self.sigma == 0:
+            return True
+        else:
+            return False
 
     def tr(self, q):
         """
@@ -337,21 +345,21 @@ class Link:
         else:
             dn = q      # prismatic
 
-        sa = sin(self.alpha); ca = cos(self.alpha);
-        st = sin(theta); ct = cos(theta);
+        sa = sin(self.alpha); ca = cos(self.alpha)
+        st = sin(theta); ct = cos(theta)
 
         if self.convention == Link.LINK_DH:
             # standard
-            t =   mat([[ ct,    -st*ca, st*sa,  an*ct],
+            t = mat([[ ct,    -st*ca, st*sa,  an*ct],
                     [st,    ct*ca,  -ct*sa, an*st],
                     [0, sa, ca, dn],
-                    [0, 0,  0,  1]]);
+                    [0, 0,  0,  1]])
 
         else:
             # modified
-            t =   mat([[ ct,    -st,    0,  an],
+            t = mat([[ ct,    -st,    0,  an],
                 [st*ca, ct*ca,  -sa,    -sa*dn],
                 [st*sa, ct*sa,  ca, ca*dn],
-                [0, 0,  0,  1]]);
+                [0, 0,  0,  1]])
 
-        return t;
+        return t
