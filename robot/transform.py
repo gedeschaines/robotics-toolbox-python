@@ -395,7 +395,8 @@ def rpy2tr(roll, pitch=None, yaw=None, zyx=False, deg=False):
 
 
 def oa2r(o,a):
-    """Rotation from 2 vectors.
+    """
+    Rotation from 2 vectors.
     The matrix is formed from 3 vectors such that::
         R = [N O A] and N = O x A.  
 
@@ -424,7 +425,8 @@ def oa2r(o,a):
 
 
 def oa2tr(o,a):
-    """otation from 2 vectors.
+    """
+    Rotation from 2 vectors.
     The rotation submatrix is formed from 3 vectors such that::
 
         R = [N O A] and N = O x A.  
