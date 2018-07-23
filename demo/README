@@ -1,7 +1,10 @@
-Some tutorial/demos in increasing order of complexity.
+Some Robotics Toolbox (RTB) for Python tutorial/demos in increasing
+order of complexity.
 
+my_robot.py     create a simple two-link manipulator
 transform.py    transforms and quaternions
-trajectory.py   trajectories
+trajectory.py   joint trajectories
+traj.py         trajectories in more detail
 animation.py    animations
 fkine.py        forward kinematics
 jacobian.py     Jacbians
@@ -11,18 +14,29 @@ fdyn.py         forward dynamics
 
 To run a DEMO from a command shell, invoke with python as
 
-  % python DEMO.py
+  > python DEMO.py
   
 or execute from within IPython as
   
-  % ipython --pylab
+  > ipython --pylab
   
   In[1]: run DEMO.py
+
+or
+
+  > ipython
+
+  In[1]: %pylab
+
+  In[2]: run DEMO.py
   
 The scripts often pause with a 'more' prompt to stop the text scrolling 
-off the screen. Also, when a plot figure is displayed, the figure window
-may need to be closed before the script execution continues.
+off the screen. It helps to clear the terminal screen before running a
+demo, and set the terminal screen resolution to 80 characters by 43 lines.
+Also, when a plot figure is displayed, the figure window may need to be
+closed before the script execution continues.
+
+A note from original developers of RTB for Python:
 
 These are command line apps, but could probably be spiffed up with a
 wxPython interface.
-
