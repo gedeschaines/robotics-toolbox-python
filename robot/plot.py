@@ -706,8 +706,8 @@ def _rbplot_add_artists3d(ax, robot):
     name_text = ax.text3D(pb[0, 0], pb[0, 1], pb[0, 2], robot.name)
     dx = xlims[0] + xlims[0]/10
     dy = ylims[0] + ylims[0]/10
-    dz = zlims[1] + zlims[1]/2
-    time_text = ax.text3D(dx, dy, 1.5, '')
+    dz = zlims[1] + abs(zlims[1]-zlims[0])/5
+    time_text = ax.text3D(dx, dy, dz, '')
     text = [name_text, time_text]
 
     return lines, text
