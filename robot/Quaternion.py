@@ -13,22 +13,25 @@ of the authors is made.
     
 from numpy import *
 from .utility import *
+import matplotlib.pyplot as plt
 import copy
 
 
 class quaternion:
-    """A quaternion is a compact method of representing a 3D rotation that has
+    """
+    A quaternion is a compact method of representing a 3D rotation that has
     computational advantages including speed and numerical robustness.
 
-    A quaternion has 2 parts, a scalar s, and a vector v and is typically written::
+    A quaternion has 2 parts, a scalar s, and a vector v and is typically
+    written:
 
         q = s <vx vy vz>
 
     A unit quaternion is one for which M{s^2+vx^2+vy^2+vz^2 = 1}.
 
-    A quaternion can be considered as a rotation about a vector in space where
-    q = cos (theta/2) sin(theta/2) <vx vy vz>
-    where <vx vy vz> is a unit vector.
+    A quaternion can be considered as a rotation about a vector in space 
+    where q = cos (theta/2) sin(theta/2) <vx vy vz>
+    and <vx vy vz> is a unit vector.
 
     Various functions such as INV, NORM, UNIT and PLOT are overloaded for
     quaternion objects.
@@ -39,29 +42,29 @@ class quaternion:
     
     def __init__(self, *args):
         '''
-Constructor for quaternion objects:
+        Constructor for quaternion objects:
 
-    - q = quaternion(v, theta)    from vector plus angle
-    - q = quaternion(R)       from a 3x3 or 4x4 matrix
-    - q = quaternion(q)       from another quaternion
-    - q = quaternion(s)       from a scalar
-    - q = quaternion(v)       from a matrix/array/list v = [s v1 v2 v3]
-    - q = quaternion(s, v1, v2, v3)    from 4 elements
-    - q = quaternion(s, v)    from 4 elements
-'''
+          - q = quaternion(v, theta)       from vector plus angle
+          - q = quaternion(R)              from a 3x3 or 4x4 matrix
+          - q = quaternion(q)              from another quaternion
+          - q = quaternion(s)              from a scalar
+          - q = quaternion(v)              from a matrix/array/list v = [s v1 v2 v3]
+          - q = quaternion(s, v1, v2, v3)  from 4 elements
+          - q = quaternion(s, v)           from 4 elements
+        '''
 
         self.vec = []
 
         if len(args) == 0:
-                # default is a null rotation
-                self.s = 1.0
-                self.v = matrix([0.0, 0.0, 0.0])
+            # default is a null rotation
+            self.s = 1.0
+            self.v = matrix([0.0, 0.0, 0.0])
 
         elif len(args) == 1:
             arg = args[0]
 
             if isinstance(arg, quaternion):
-            # Q = QUATERNION(q) from another quaternion
+                # Q = QUATERNION(q) from another quaternion
                 self.s = arg.s
                 self.v = arg.v
                 return
@@ -92,7 +95,6 @@ Constructor for quaternion objects:
 
             elif len(v) == 1:
                 # Q = QUATERNION(s) from a scalar
-                #Q = QUATERNION(s)               from a scalar
                 self.s = v[0]
                 self.v = mat([0, 0, 0])
 
@@ -117,60 +119,62 @@ Constructor for quaternion objects:
             self.v = mat(args[1:4])
 
         else:
-                print("error")
-                return None
+            print("error")
+            return None
 
     def __repr__(self):
-            return "%f <%f, %f, %f>" % (self.s, self.v[0,0], self.v[0,1], self.v[0,2])
+        return "%f <%f, %f, %f>" % \
+               (self.s, self.v[0,0], self.v[0,1], self.v[0,2])
 
 
     def tr2q(self, t):
-        #TR2Q   Convert homogeneous transform to a unit-quaternion
-        #
-        #   Q = tr2q(T)
-        #
-        #   Return a unit quaternion corresponding to the rotational part of the
-        #   homogeneous transform T.
-
+        '''
+        Convert homogeneous transform to a unit-quaternion.
+        
+         - q = tr2q(T)
+         
+        Return a unit quaternion corresponding to the rotational
+        part of the homogeneous transform T.
+        '''
         qs = sqrt(trace(t)+1)/2.0
-        kx = t[2,1] - t[1,2]    # Oz - Ay
-        ky = t[0,2] - t[2,0]    # Ax - Nz
-        kz = t[1,0] - t[0,1]    # Ny - Ox
+        kx = t[2,1] - t[1,2]  # Oz - Ay
+        ky = t[0,2] - t[2,0]  # Ax - Nz
+        kz = t[1,0] - t[0,1]  # Ny - Ox
 
         if (t[0,0] >= t[1,1]) and (t[0,0] >= t[2,2]):
-                kx1 = t[0,0] - t[1,1] - t[2,2] + 1      # Nx - Oy - Az + 1
-                ky1 = t[1,0] + t[0,1]           # Ny + Ox
-                kz1 = t[2,0] + t[0,2]           # Nz + Ax
-                add = (kx >= 0)
+            kx1 = t[0,0] - t[1,1] - t[2,2] + 1  # Nx - Oy - Az + 1
+            ky1 = t[1,0] + t[0,1]               # Ny + Ox
+            kz1 = t[2,0] + t[0,2]               # Nz + Ax
+            add = (kx >= 0)
         elif (t[1,1] >= t[2,2]):
-                kx1 = t[1,0] + t[0,1]           # Ny + Ox
-                ky1 = t[1,1] - t[0,0] - t[2,2] + 1  # Oy - Nx - Az + 1
-                kz1 = t[2,1] + t[1,2]           # Oz + Ay
-                add = (ky >= 0)
+            kx1 = t[1,0] + t[0,1]               # Ny + Ox
+            ky1 = t[1,1] - t[0,0] - t[2,2] + 1  # Oy - Nx - Az + 1
+            kz1 = t[2,1] + t[1,2]               # Oz + Ay
+            add = (ky >= 0)
         else:
-                kx1 = t[2,0] + t[0,2]           # Nz + Ax
-                ky1 = t[2,1] + t[1,2]           # Oz + Ay
-                kz1 = t[2,2] - t[0,0] - t[1,1] + 1  # Az - Nx - Oy + 1
-                add = (kz >= 0)
+            kx1 = t[2,0] + t[0,2]               # Nz + Ax
+            ky1 = t[2,1] + t[1,2]               # Oz + Ay
+            kz1 = t[2,2] - t[0,0] - t[1,1] + 1  # Az - Nx - Oy + 1
+            add = (kz >= 0)
 
         if add:
-                kx = kx + kx1
-                ky = ky + ky1
-                kz = kz + kz1
+            kx = kx + kx1
+            ky = ky + ky1
+            kz = kz + kz1
         else:
-                kx = kx - kx1
-                ky = ky - ky1
-                kz = kz - kz1
+            kx = kx - kx1
+            ky = ky - ky1
+            kz = kz - kz1
 
         kv = matrix([kx, ky, kz])
         nm = linalg.norm( kv )
         if nm == 0:
-                self.s = 1.0
-                self.v = matrix([0.0, 0.0, 0.0])
+            self.s = 1.0
+            self.v = matrix([0.0, 0.0, 0.0])
 
         else:
-                self.s = qs
-                self.v = (sqrt(1 - qs**2) / nm) * kv
+            self.s = qs
+            self.v = (sqrt(1 - qs**2) / nm) * kv
 
     ############### OPERATORS #########################################
     #PLUS Add two quaternion objects
@@ -180,7 +184,8 @@ Constructor for quaternion objects:
     # q1+q2 standard quaternion addition
     def __add__(self, q):
         '''
-        Return a new quaternion that is the element-wise sum of the operands.
+        Return a new quaternion that is the element-wise sum of the
+        operands.
         '''
         if isinstance(q, quaternion):
             qr = quaternion()
@@ -201,7 +206,8 @@ Constructor for quaternion objects:
 
     def __sub__(self, q):
         '''
-        Return a new quaternion that is the element-wise difference of the operands.
+        Return a new quaternion that is the element-wise difference
+        of the operands.
         '''
         if isinstance(q, quaternion):
             qr = quaternion()
@@ -219,15 +225,15 @@ Constructor for quaternion objects:
         '''
         Quaternion product. Several cases are handled
 
-            - q * q   quaternion multiplication
-            - q * c   element-wise multiplication by constant
-            - q * v   quaternion-vector multiplication q * v * q.inv();
+          - q * q   quaternion multiplication
+          - q * c   element-wise multiplication by constant
+          - q * v   quaternion-vector multiplication q * v * q.inv();
         '''
         qr = quaternion();
 
         if isinstance(q2, quaternion):
 
-            #Multiply unit-quaternion by unit-quaternion
+            # Multiply unit-quaternion by unit-quaternion
             #
             #   QQ = qqmul(Q1, Q2)
 
@@ -246,10 +252,10 @@ Constructor for quaternion objects:
             #   Rotate the vector V by the unit-quaternion Q.
 
             if q2.shape == (1,3) or q2.shape == (3,1):
-                    qr = self * quaternion(q2) * self.inv()
-                    return qr.v;
+                qr = self * quaternion(q2) * self.inv()
+                return qr.v;
             else:
-                    raise ValueError;
+                raise ValueError;
 
         else:
             qr.s = self.s * q2
@@ -261,7 +267,7 @@ Constructor for quaternion objects:
         '''
         Quaternion product. Several cases are handled
 
-            - c * q   element-wise multiplication by constant
+          - c * q   element-wise multiplication by constant
         '''
         qr = quaternion()
         qr.s = self.s * c
@@ -273,10 +279,8 @@ Constructor for quaternion objects:
         '''
         Quaternion in-place multiplication
 
-            - q *= q2
-
+          - q *= q2
         '''
-
         if isinstance(x, quaternion):
             s1 = self.s;
             v1 = self.v
@@ -294,9 +298,10 @@ Constructor for quaternion objects:
         return self;
 
     def __div__(self, x):  # for Python 2
-        '''Return quaternion quotient.  Several cases handled:
-            - q1 / q2      quaternion division implemented as q1 * q2.inv()
-            - q1 / c       element-wise division
+        '''
+        Return quaternion quotient.  Several cases handled:
+          - q1 / q2      quaternion division implemented as q1 * q2.inv()
+          - q1 / c       element-wise division
         '''
         if isinstance(x, quaternion):
             qr = quaternion()
@@ -308,9 +313,10 @@ Constructor for quaternion objects:
         return qr
         
     def __truediv__(self, x):  # for Python 3
-        '''Return quaternion quotient.  Several cases handled:
-            - q1 / q2      quaternion division implemented as q1 * q2.inv()
-            - q1 / c       element-wise division
+        '''
+        Return quaternion quotient.  Several cases handled:
+          - q1 / q2      quaternion division implemented as q1 * q2.inv()
+          - q1 / c       element-wise division
         '''
         if isinstance(x, quaternion):
             qr = quaternion()
@@ -321,13 +327,11 @@ Constructor for quaternion objects:
 
         return qr
 
-
     def __pow__(self, p):
         '''
-        Quaternion exponentiation.  Only integer exponents are handled.  Negative
-        integer exponents are supported.
+        Quaternion exponentiation.  Only integer exponents are handled.
+        Negative integer exponents are supported.
         '''
-
         # check that exponent is an integer
         if not isinstance(p, int):
             raise ValueError
@@ -352,12 +356,12 @@ Constructor for quaternion objects:
         return copy.copy(self);
 
     def inv(self):
-        """Return the inverse.
+        """
+        Return the inverse.
 
         @rtype: quaternion
         @return: the inverse
         """
-
         qi = quaternion(self);
         qi.v = -qi.v;
 
@@ -365,17 +369,18 @@ Constructor for quaternion objects:
 
 
     def norm(self):
-        """Return the norm of this quaternion.
+        """
+        Return the norm of this quaternion.
 
         @rtype: number
         @return: the norm
         """
-
         return linalg.norm(self.double())
 
 
     def double(self):
-        """Return the quaternion as 4-element vector.
+        """
+        Return the quaternion as 4-element vector.
 
         @rtype: 4-vector
         @return: the quaternion elements
@@ -400,7 +405,8 @@ Constructor for quaternion objects:
 
 
     def tr(self):
-        """Return an equivalent 4x4 homogeneous transformation matrix.
+        """
+        Return an equivalent 4x4 homogeneous transformation matrix.
 
         @rtype: 4x4 homogeneous transform
         @return: equivalent transformation matrix
@@ -410,12 +416,12 @@ Constructor for quaternion objects:
         return r2t( self.r() )
 
     def r(self):
-        """Return an equivalent 3x3 rotation matrix.
+        """
+        Return an equivalent 3x3 rotation matrix.
 
         @rtype: 3x3 orthonormal rotation matrix
         @return: equivalent rotation matrix
         """
-
         s = self.s;
         x = self.v[0,0]
         y = self.v[0,1]
@@ -425,8 +431,37 @@ Constructor for quaternion objects:
                        [2*(x*y+s*z),    1-2*(x**2+z**2),    2*(y*z-s*x)],
                        [2*(x*z-s*y),    2*(y*z+s*x),    1-2*(x**2+y**2)]])
 
+    def plot(self, *args):
+        """
+        Plot self or another quaternion.
+        """
+        if args is not None and len(args) > 0 and isinstance(args[0], quaternion):
+           Q = args[0]
+        else:
+           Q = self
 
-
+        x = Q*mat([1.0, 0.0, 0.0])
+        y = Q*mat([0.0, 1.0, 0.0])
+        z = Q*mat([0.0, 0.0, 1.0])
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
+        ax.set_xlim(-1.0, 1.0)
+        ax.set_ylim(-1.0, 1.0)
+        ax.set_zlim(-1.0, 1.0)
+        ax.plot3D([0, x[0,0]], [0, x[0,1]], [0, x[0,2]], color='red')
+        ax.text3D(x[0,0], x[0,1], x[0,2], 'X')
+        ax.plot3D([0, y[0,0]], [0, y[0,1]], [0, y[0,2]], color='green')
+        ax.text3D(y[0,0], y[0,1], y[0,2], 'Y')
+        ax.plot3D([0, z[0,0]], [0, z[0,1]], [0, z[0,2]], color='blue')
+        ax.text3D(z[0,0], z[0,1], z[0,2], 'Z')
+        ax.grid(True)
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        plt.show(block=False)
+        
+        
 #QINTERP Interpolate rotations expressed by quaternion objects
 #
 #   QI = qinterp(Q1, Q2, R)
