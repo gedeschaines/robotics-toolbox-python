@@ -38,7 +38,13 @@ def testparser(tests):
                 pecho = not pecho          
             continue   
         if len(line) == 0 or line[0] in '%#':
-            if pecho : print('%s' % line)
+            if len(line) > 1 and line[1] in '%#':
+                # always print special '%%" or '##' comment
+                print('%s' % line)
+                continue
+            if pecho:
+                # only print regular comments if echo 'on'
+                print('%s' % line)
             continue
 
         if pecho : print(':: %s' % line)
@@ -53,23 +59,30 @@ def testparser(tests):
                 if line[-1] != ';':
                     for v in e[0].split(','):  # handle value lists or tuples
                         v = v.lstrip('[( ').rstrip(' )]')
-                        print('%s =' % v)
-                        result = '%s' % eval(v)
-                        if result.find('array(') or result.find('matrix(') :
-                            # handle numpy array and matrix
-                            result = str.replace(result, ']), ',']),\n')
-                            result = str.replace(result, "'", '"')
-                        print('%s' % result)
+                        if len(v) > 0 and v != '_':
+                            print('%s =' % v)
+                            result = '%s' % eval(v)
+                            if result.find('array(') or result.find('matrix(') :
+                                # handle numpy array and matrix
+                                result = str.replace(result, ']), ',']),\n')
+                                result = str.replace(result, "'", '"')
+                            print('%s' % result)
+                    print('')
             else:
                 result = eval(line.rstrip(';'))
                 if result is not None and line[-1] != ';':
-                    result = '%s' % (result)
-                    if result.find('array(') or result.find('matrix(') :
+                    if isinstance(result, (list, tuple)):
+                        vals = ""
+                        for val in result:
+                            vals = vals + " " + "%s" % val
+                    else:
+                        vals = '%s' % result
+                    if vals.find('array(') or vals.find('matrix(') :
                          # handle numpy array and matrix
-                         result = str.replace(result, ']), ',']),\n')
-                         result = str.replace(result, "'", '"')
-                    print('%s =\n%s' % (line.rstrip(':'), result)) 
-            print('')
+                         vals = str.replace(vals, ']), ',']),\n')
+                         vals = str.replace(vals, "'", '"')
+                    print('%s =\n%s' % (line.rstrip(':'), vals))
+                    print('')
         except AssertionError as e:
             print('AssertionError: %s' % e)
         except ValueError as e:
