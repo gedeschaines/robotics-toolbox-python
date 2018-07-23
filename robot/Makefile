@@ -6,6 +6,7 @@ FILES = utility.py \
 	trajectory.py \
 	kinematics.py \
 	dynamics.py \
+	wtrans.py \
 	Link.py \
 	Robot.py \
 	plot.py \
