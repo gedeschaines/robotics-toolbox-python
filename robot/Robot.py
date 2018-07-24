@@ -52,7 +52,7 @@ class Robot(object):
                     self.__dict__[k] = copy.deepcopy(v)
                 else:
                     self.__dict__[k] = v
-        elif len(arg) > 1 and isinstance(arg[0], Link):
+        elif arg is not None and len(arg) > 1 and isinstance(arg[0], Link):
             self.links = arg
         else:
             raise AttributeError
@@ -107,9 +107,8 @@ class Robot(object):
         return s
 
     def __mul__(self, r2):
-        r = Robot()        # clone the robot
-        print(r)
-        r.links += r2.links
+        r = Robot(self)        # clone the robot
+        r.links = r.links + r2.links
         return r
 
     def copy(self):
