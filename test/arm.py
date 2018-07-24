@@ -10,6 +10,16 @@ set_printoptions(precision=4, suppress=True);
 
 from robot.puma560 import *
 
+l = Link(1, 2, 3, 4, 0, Link.LINK_DH)
+l
+l = Link(1, 2, 3, 4, 1, Link.LINK_DH)
+l
+
+l = Link(1, 2, 3, 4, 0, Link.LINK_MDH)
+l
+l = Link(1, 2, 3, 4, 1, Link.LINK_MDH)
+l
+
 l.display()
 l.offset = 9
 l.m = 10
@@ -55,7 +65,7 @@ p560.tool
 p560.config()
 p560.ismdh()
 
-pbig=p560*p560
+pbig = p560*p560
 pbig
 p560
 
