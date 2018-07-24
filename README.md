@@ -1,11 +1,11 @@
 ## robotics-toolbox-python-update1 ##
 Robotics Toolbox for Python - Update 1
 
-This is a 1st update on the 'old first attempt' at creating an open Python version of the Robotics Toolbox for MATLAB (RTB). Although the RTB for Python repository has languished over the past decade, there may still be some interest in its revival; even in its dated and rudimentary form. At this point, there is no intent to morph RTB for Python into another feature rich robot simulation tool extensively dependent on 3rd party modules and libraries. However, it should be noted that the present RTB for Python architecture relies exclusively on the 'pylab' convenience module, a practice not recommended by [**Matplotlib**](https://matplotlib.org/faq/usage_faq.html#matplotlib-pyplot-and-pylab-how-are-they-related) developers.
+This is a 1st update on the '[**old first attempt**](https://github.com/petercorke/robotics-toolbox-python)' at creating an open Python version of Peter Corke's [**Robotics Toolbox for MATLAB (RTB)**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox). Although the RTB for Python repository has languished over the past decade, there may still be some interest in its revival; even in its dated and rudimentary form. At this point, there is no intent to morph RTB for Python into another feature rich robot simulation tool extensively dependent on 3rd party modules and libraries. However, it should be noted that the present RTB for Python architecture relies exclusively on the 'pylab' convenience module, a practice not recommended by [**Matplotlib**](https://matplotlib.org/faq/usage_faq.html#matplotlib-pyplot-and-pylab-how-are-they-related) developers.
 
 #### Getting Started ####
 
-Download, unpack and run demos and tests as described in the README files, or optionally just build and install with the provided setup.py script (e.g., python setup.py install). Best use experience with RBT for Python is in IPython's interactive Pylab shell mode. For example, to display an animation of the Puma 560 (standard) robot transition from a nominal pose to a resting pose, invoke IPython in the demo or test directory and enter the six commands as shown below.
+Download, unpack and run demos and tests as described in the README files, or optionally just build and install with the provided setup.py script (e.g., python setup.py install). Best use experience with RTB for Python is in IPython's interactive Pylab shell mode. For example, to display an animation of the Puma 560 (standard) robot transition from a nominal pose to a resting pose, invoke IPython in the demo or test directory and enter the six commands as shown below.
 
 $ ipython --matplotlib
 
@@ -21,9 +21,9 @@ In \[5]: (Q,\_,\_) = jtraj(qn,qr,51)
 
 In \[6]: rbplot(p560, Q)
 
-The above will generate an animation similiar to that shown in this animated gif converted from an mp4 video clip created with 'rec=1' passed as a third argument to rbplot() on input line \[6] above.
+The above will generate an animation of a stick figure rendering of the Puma 560 as depicted in the image below. Clicking on the image will bring up an MP4 video clip of the animation created with 'rec=1' passed as a third argument to rbplot() on input line \[6] above.
 
-![Puma_560 animation recorded by rbplot()](./docs/Puma_560.gif)
+<a href="https://youtu.be/7zvrEWacG5Q"><img src="./docs/images/Puma_560.jpg" width="600" height="400" alt="Puma 560 robot in RTB for Python"></a>
 
 #### Guidelines for Update 1 ####
 
@@ -49,17 +49,18 @@ Although this effort is conducted on an Ubuntu 14.04 x86_64 Linux system with th
 * Python 3.4.3, IPython 5.3.0, NumPy 1.14.5, Matplotlib 2.2.2
 * Octave 4.0.2
 
-While Octave is not required to use RTB for Python, it is being utilized to run RTB MATLAB demo and test scripts for comparison with updated RTB for Python demos and tests. Several MATLAB and Octave scripts in the RTB v9.8 distribution required modificaton to execute in Octave 4.0.2. The modified scripts are provided in the ./Octave/rvctools subdirectory of this distribution. As with the Octave scripts in the RTB distribution, simply copy the scripts to the corresponding ./rvctools subdirectories in the default or user specific Octave function search path.
+While Octave is not required to use RTB for Python, it is being utilized to run RTB MATLAB demo and test scripts for comparison with updated RTB for Python demos and tests. Several MATLAB and Octave scripts in the RTB v9.8 distribution required modification to execute in Octave 4.0.2. The modified scripts are provided in the ./Octave/rvctools subdirectory of this distribution. As with the Octave scripts in the RTB distribution, simply copy the scripts to the corresponding ./rvctools subdirectories in the default or user specific Octave function search path.
 
 #### Further Attention ####
 
 * Non-convergent inverse kinematic iterations do not produce the same error norms among Python 2, 3 and Octave, which may indicate an implementation error in the ikine function or affects of possible differences in numerical precision of utilized linear algebra library functions.
-* RTB for Python and Octave 4 currently use 'lsode' method to integrate differential equations of motion for manipulator dynamics, but ode45 is available for both and could be a user selectable feature.
-* Encountered several instances where fundamental differences between MATLAB and Python array/matrix operations ([refer here](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html)), type coercion and copy properties caused program errors in RBT for Python. Unidentified instances may still exist.
-* Enhancements to robot pose graphics capabilities and features will require more sophisticated data structures for the Robot class (i.e., for the handle and plotopt attributes) and the introduction of a Plot class to eliminate plot module global variables and address redrawing event handling issues.
-* RTB for Python module import statements require refinement to restrict overly broad inclusions of non-essential module elements and to address circular references.
-* Organization of modules into an object-oriented design pattern would improve the usability and maintainablity of RTB for Python source code.
 * Clamping joint movements in the ikine solver iteration loop is needed to produce realistic manipulator motion.
+* RTB for Python and Octave 4 currently use 'lsode' method to integrate differential equations of motion for manipulator dynamics, but ode45 is available for both and could be a user selectable feature.
+* Encountered several instances where fundamental differences between MATLAB and Python array/matrix operations ([refer here](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html)), type coercion and copy properties caused program errors in RTB for Python. Unidentified instances may still exist.
+* Enhancements to robot pose graphics capabilities and features will require more sophisticated data structures for the Robot class (i.e., for the handle and plotopt attributes) and the introduction of a Plot class to eliminate plot module global variables and address redrawing event handling issues.
+* RTB for Python module import statements require refinement to restrict overly broad inclusions of non-essential module components and to address circular references. The reliance on 'from module import *' statements hinders the ability for epydoc to produce only RTB for Python robot module specific documentation.
+* Organization of modules into an object-oriented design pattern would improve the usability and maintainability of RTB for Python source code.
+* Testing currently requires visual inspection of print and graphic test results to determine pass or fail outcome. A rigorous, automated testing strategy should be employed.
 
 #### Attributions ####
 
@@ -70,6 +71,12 @@ While Octave is not required to use RTB for Python, it is being utilized to run 
 
 * See the file [DISCLAIMER-RTB](./DISCLAIMER-RTB)
 * See the file [DISCLAIMER-GED](./DISCLAIMER-GED)
+
+#### Epilogue ####
+
+A prime consideration in the RTB for Python update effort involves working with 10 year old Python code and 7 year old Octave scripts. Their relevance in the present time must be measured against the newest features and capabilities of RTB v10, Octave v4.4, Python v3.6, and the availability of numeric and graphic packages and libraries on commonly used computer platforms. Also, there is a modern predilection for realistic animation imagery and sophisticated GUI's that puts a significant software requirements burden on future development efforts with RTB for Python.
+
+In order to concentrate on the correctness and accuracy of serial-chain kinematics and dynamics embodied in RTB for Python and Octave, less importance was placed on enhancing the user interface. To this end, the data plots and simplistic stick figure graphics were deemed sufficient to visualize important concepts, and to evaluate simulated manipulator kinematic and dynamic behavior. After the core functionality of RTB for Python has been updated, then user interface enhancements to provide the tutorial features and API available in newer versions of the Robotics Toolbox for MATLAB can be addressed.
 
 #### Baseline Sources ####
 
