@@ -1024,7 +1024,7 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
         plt_ion = plt.isinteractive()
         if plt_ion: plt.ioff()
         print("Creating animation video; presentation will begin shortly ...")
-        writer = Writer(fps=fps,
+        writer = Writer(fps=fps, codec='libx264',
                         metadata=dict(artist='RTB -- rbplot'),
                         bitrate=-1)
         filename = robot.name.replace(' ','_') + '.mp4'
@@ -1394,7 +1394,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
         plt_ion = plt.isinteractive()
         if plt_ion: plt.ioff()
         print("Creating animation video; presentation will begin shortly ...")
-        writer = Writer(fps=fps,
+        writer = Writer(fps=fps, codec='libx264',
                         extra_args=['-an'],
                         metadata=dict(artist='RTB -- tranimate'),
                         bitrate=-1)
