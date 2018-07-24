@@ -25,8 +25,8 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with RTB. If not, see <http://www.gnu.org/licenses/>.
 
-from transform import transl, t2r
-from utility import *
+from robot.transform import transl, t2r
+from robot.utility import *
 
 def wtrans(T, W):
     """
