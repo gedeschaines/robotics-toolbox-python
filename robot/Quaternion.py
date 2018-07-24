@@ -282,7 +282,7 @@ class quaternion:
           - q *= q2
         '''
         if isinstance(x, quaternion):
-            s1 = self.s;
+            s1 = self.s
             v1 = self.v
             s2 = x.s
             v2 = x.v
