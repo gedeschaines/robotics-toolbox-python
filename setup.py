@@ -12,7 +12,10 @@ setup(
     # Important:    v- keep a space here so getvers.sh script can extract version number.
     version = '1.0'  ,
     packages = ['robot'],
-    data_files = [('demo', ['demo/README',
+    data_files = [('docs',  ['docs/show_video.html']),
+                  ('docs/images', ['docs/images/Puma_560.jpg',
+                                   'docs/images/Puma_560.mp4']),
+                  ('demo', ['demo/README',
                             'demo/_robot.py',
                             'demo/animation.py',
                             'demo/fdyn.py',
