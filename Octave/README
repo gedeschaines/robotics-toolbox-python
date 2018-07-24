@@ -1,0 +1,88 @@
+----------------------------------------------------------------------------------
+Robotics Toolbox for MATLAB Octave Scripts supporting RTB for Python Update Effort
+----------------------------------------------------------------------------------
+
+Ideally these updated versions of several Octave and MATLAB scripts should be
+introduced in Peter Corke's Robotics Toolbox for MATLAB (RTB) source respository
+at https://github.com/petercorke/robotics-toolbox-matlab.  However, as these
+modified scripts were directly related to the Robotics Toolbox for Python update
+effort, it seemed appropriate to provide them here before formally submitting
+them for review as possible candidates for inclusion into the Robotics Toolbox
+for MATLAB respository.
+
+Since the base source code used in the RTB for Python update effort is 10 years
+old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made to
+the scripts identified below may be irrelevant with regard to newer versions of
+RTB.  Also, with only Octave v4.0.2 currenly available to run RTB for MATLAB,
+there is a possibility that some modifications to non-Octave specific scripts
+may be incompatable with the latest versions of both MATLAB and Octave.
+
+
+List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts.
+---------------------------------------------------------------------------------
+
+-./rvctools
+  |
+  +-./robot
+     |
+     +- mdl_fourlink2d.m -- new script for 2D planar 4-link robot data
+     +- mdl_fourlink3d.m -- new script for 3D upright 4-link robot data
+     +- mdl_phantomxo.m  -- mdl_phantomx.m converted to old-style (pre-Revolute class)
+     +- mdl_puma560.m    -- mdl_puma560.m converted to old-style (pre-Revolute class)
+     +- mdl_puma560akb.m -- cosmetic changes, added robot specific named q vectors
+     +- mdl_puma560std.m -- same as mdl_puma560.m but creates robot named 'p560s'
+     +- mdl_stanford.m   -- cosmetic changes to RTB v9.8 version
+     |
+     +-./@Link
+     |  |
+     |  + subsref.m -- call to mlinktran() corrected to mlinktrans() in function A()
+     |
+     +-./@SerialLink
+     |  |
+     |  +- accel.m     -- changed torque(:) to torque' in line 91
+     |  +- coriolis.m  -- changed transpose operator to .' in lines 78,79,92,93
+     |  +- fdyn.m      -- added ; on line 78, changed isstr() to ischar() line 107
+     |  +- ikine.m     -- updated to match robot/@SerialLink/ikine.m in RTB repo master
+     |  +- inertia.m   -- changed call robot.inertia to inertia(robot on line 44
+     |  +- maniplty.m  -- fixed opt.method detection logic
+     |  +- rne_dh.m    -- updated to match robot/@SerialLink/rne_dh.m in RTB repo master
+     |  +- rne_mdh.m   -- changed tranpose operator to .', fixed for Pc terms
+     |  +- subsref.m   -- add case for 'animate'
+     |
+     +-./demos -- Scripts tailored to use in comparsions with RTB for Python demos
+     |  |
+     |  +- fdyn.m     -- added more detail, changed p560.func calls to func(p560
+     |  +- graphics.m -- put multi-line statement on one line
+     |  +- idyn.m     -- updated to match robot/demos/idyn.m in repo master
+     |  +- ikine.m    -- fixed use of 'nopinv' case since opt.pinv=True by default
+     |  +- jacob.m    -- changed calls to maniplty to match RTB for Python
+     |  +- README.txt -- instruction to use runscript function to execute demo scripts
+     |  +- traj.m     -- turned off Octave:possible-matlab-short-circuit-operator
+     |
+     +-./tests -- Scripts tailored to use in comparsions with RTB for Python tests
+     |  |
+     |  +- dynamics.m    -- modified unit_test/old/dynamics.m from RTB repo master
+     |  +- jacobian.m    -- modified unit_test/old/jacobian.m from RTB repo master
+     |  +- kine_p560m.m  -- new comparitive test against RTB for Python kine_p560m.py
+     |  +- kine_p560s.m  -- new comparitive test against RTB for Python kine_p560s.py
+     |  +- kine_stanf.m  -- new comparitive test against RTB for Python kine_stanf.py
+     |  +- kinematics.m  -- modified unit_test/old/kinematics.m from RTB repo master
+     |  +- quaternion.m  -- modified unit_test/old/quaternion.m from RTB repo master
+     |  +- test_plot2d.m -- new comparitive test against RTB for Python test_rbplot2d.py
+     |  +- test_plot3d.m -- new comparitive test against RTB for Python test_rbplot3d.py
+     |  +- trajectory.m  -- modified unit_test/old/trajectory.m from RTB repo master
+     |  +- transform.m   -- modified unit_test/old/transform.m from RTB repo master
+     |
+     +-./utils -- New robot subdirectory to hold support functions for tests and demos
+        |
+        +- assertEqual.m -- new function to support quaternion and transform tests
+        +- crossp.m      -- new function to support transform test
+        +- hgtransform.m -- unmodified scripts/plot/util/hgtransform.m from Octave repo master
+        +- mat.m         -- modified unit_test/old/mat.m from RTB repo master
+
+
+Master Source Repositories
+--------------------------
+
+RTB    -- https://github.com/petercorke/robotics-toolbox-matlab
+Octave -- https://github.com/NexMirror/Octave
