@@ -7,18 +7,21 @@ Defines the object 'px' in the current workspace which describes the
 kinematic characteristics of a PhantomX Pincher Robot, a 4 joint hobby
 class manipulator by Trossen Robotics.
 
-Also defines the vector qz = [0, 0, 0, 0] which corresponds to the zero
-joint angle configuration.
+Also defines the vectors qz and qn which corresponds to the zero
+angle and a nominal pose joint angle configuration respectively.
 
 Notes::
  - the x-axis is forward, and the z-axis is upwards.
  - uses standard DH conventions.
  - Tool centrepoint is middle of the fingertips.
- - all translational units in m.
+ - all translational units in meters.
 
 Reference::
 
- - http://www.trossenrobotics.com/productdocs/assemblyguides/phantomx-basic-robot-arm.html
+ - https://petercorke.com/wordpress/interfacing-a-hobby-robot-arm-to-matlab
+ - https://www.trossenrobotics.com/p/PhantomX-Pincher-Robot-Arm.aspx
+ - https://www.trossenrobotics.com/Shared/productdocs/PhantomX_Pincher_Arm_Quickstart.pdf
+ - https://www.trossenrobotics.com/productdocs/assemblyguides/phantomx-basic-robot-arm.html
 
 @see: L{Robot}, L{puma560}, L{puma560akb}, L{stanford}, L{fourlink}, L{twolink}.
 
@@ -39,10 +42,10 @@ print("Creating a PhantomX robot as px")
 L = []
 
 # link DH parameters
-L.append( Link(alpha=-pi/2,  A= 0.0,    D=0.04, sigma=0))
-L.append( Link(alpha=pi,     A=-0.105,  D=0.0,  sigma=0))
-L.append( Link(alpha=0.0,    A=-0.105,  D=0.0,  sigma=0))
-L.append( Link(alpha=0.0,    A=-0.105,  D=0.0,  sigma=0))
+L.append(Link(alpha=-pi/2,  A= 0.0,    D=0.04, sigma=0))
+L.append(Link(alpha=pi,     A=-0.105,  D=0.0,  sigma=0))
+L.append(Link(alpha=0.0,    A=-0.105,  D=0.0,  sigma=0))
+L.append(Link(alpha=0.0,    A=-0.105,  D=0.0,  sigma=0))
 
 L[1].offset = pi/2
 
@@ -87,9 +90,11 @@ L[3].G = 1.0
 
 # some useful poses
 #
-qz = [0.0, 0.0, 0.0, 0.0]  # zero angles, straight along x-axis pose
+qz = [0.0, 0.0,  0.0,  0.0]  # zero angles, straight along x-axis pose
+qn = [0.0, 0.6, -1.0, -1.2]  # a nominal pose
 # prevent name collision with other robots
 qz_px = qz
+qn_px = qn
 
 # create robot with serial-link manipulator
 px = Robot(L, name='PhantomX', manuf='Trossen Robotics')
