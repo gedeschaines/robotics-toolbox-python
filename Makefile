@@ -22,13 +22,19 @@ FILES = utility.py \
 
 PFILES = $(addprefix robot/, $(FILES))
 
-VERSION = $(shell svn info -r HEAD | grep Revision | awk '{print $$2}')
-PASSWORD = $(shell cat .password)
+VERSION = $(shell ./getvers.sh)
+
+vers:
+	@echo "RTB for Python version in setup.py is $(VERSION)"
 
 all:
-	echo $(VERSION)
+	@echo "RTB for Python version in setup.py is $(VERSION)"
+
+# Note: Using epydoc to produce code documentation is only
+#       advisable after refinements have been made to import
+#       statements to eleminate inclusion of documentation
+#       for non-robot module code.
 
 doc: 
 	epydoc $(PFILES)
-	zip -r rtbpy-doc-$(VERSION) html
-
+	zip -r rtb4python-doc-$(VERSION) html
