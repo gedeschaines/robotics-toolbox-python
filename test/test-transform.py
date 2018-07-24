@@ -144,14 +144,15 @@ q1.interp(q2, 1)
 q1.interp(q2, 0.5)
 q1.interp(q2, [0, .2, .5, 1])
 
+q1
 q1-q1_t
+q2
 q2-q2_t
 q1
-q1 *= q2
-q1
-q1 *= 2
-q1
-q2
+## q1*=q2  # Python eval cannot handle this expression
+q1 = q1*q2
+## q1*=2   # Python eval cannot handle this expression
+q1 = q1*2
 '''
 
 if __name__ == "__main__" :
