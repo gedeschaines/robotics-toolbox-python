@@ -1,5 +1,10 @@
 build/*
+dist/*
+html/*
+robotics_toolbox_python_update1.egg-info/*
+temp/*
 work/*
 __pycache__/*
 *.py[co]
+*.log
 *~
