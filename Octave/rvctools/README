@@ -1,0 +1,55 @@
+------------------------------------------------------------------------
+Instructions for using the modified Robotics Toolbox for MATLAB scripts.
+------------------------------------------------------------------------
+
+(1) It is assumed a RVCTools (RTB) v9 distribution has been installed as
+    instructed in its provided README file, and the Octave subdirectory
+    scripts installed as directed. See:
+
+    https://github.com/petercorke/robotics-toolbox-matlab/tree/master/Octave
+
+(2) The scripts in the ./robot/@Link and ./robot/@SerialLink subdirectories
+    of this README file must replace like named scripts installed in step (1).
+    There is no need to relocate scripts in the ./robot, ./robot/demos,
+    ./robot/tests and ./robot/utils subdirectories. The next two steps will
+    provide the means for Octave to locate the robot models and utility
+    scripts at runtime.
+
+(3) Create an exported environment variabled named OCTAVE_RVCT and assign to
+    it the complete path to the directory containing this README file. The
+    path should end with '/rvctools'.
+
+(4) If the provided .octaverc file is within a working directory from which
+    Octave is executed, the complete paths to the ./robot and robot/utils
+    subdirectories will be prepended to Octave's function search path.
+
+(5) Since the mdl_puma560.m, mdl_puma560akb.m and mdl_stanford.m scripts are
+    present in the ./robot subdirectory, Octave will issue warnings about
+    these functions shadowing core library functions. The warning can be
+    ignored, or turned off by placing the following statement
+
+      warning ("off", 'Octave:shadowed-function');
+
+    in the .octaverc file just after the header comment section and before
+    the code section containing the addpath statements. The warnings can
+    be prevented by copying these scripts to the ./robot subdirectory which
+    the Octave @Link, @Quaternion and @SerialLink directories were copied
+    to in step (1).
+
+(6) In an Octave Command Window, demo scripts can be executed by using the
+    RVCTools runscript function. For example, while the local ./rvctools is
+    the current work directory, the graphics demo can be run by entering
+    the following:
+
+      >> runscript('./robot/demos/graphics')
+
+    To run a test script, just use the run command. For example, from the
+    ./rvctools subdirectory the jacobian test can be run by entering the
+    following:
+
+      >> run ./robots/tests/jacobian
+
+    If in the tests subdirectory, the run command is not required. Just
+    type the test script name.
+
+      >> jacobian
