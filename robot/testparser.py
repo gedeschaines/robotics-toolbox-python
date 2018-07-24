@@ -8,6 +8,8 @@ from robot import *
 from robot.utility import *
 from robot.dynamics import *
 from robot.trajectory import *
+from robot.wtrans import *
+
 import traceback
 import sys
 
