@@ -2,7 +2,6 @@
 """
 
 import _robot
-from robot.wtrans import *
 from robot.testparser import *
 
 
@@ -19,7 +18,7 @@ type(W)
 ## rotated 90 deg about x-axis
 R = rpy2r(90.0, pitch=0.0, yaw=0.0, deg=True);
 T = r2t(R);
-Wt = Wtrans(T,W)
+Wt = wtrans(T,W)
 type(Wt)
 Wt.shape
 
