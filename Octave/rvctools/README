@@ -15,7 +15,7 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
     provide the means for Octave to locate the robot models and utility
     scripts at runtime.
 
-(3) Create an exported environment variabled named OCTAVE_RVCT and assign to
+(3) Create an exported environment variable named OCTAVE_RVCT and assign to
     it the complete path to the directory containing this README file. The
     path should end with '/rvctools'.
 
@@ -44,12 +44,12 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
       >> runscript('./robot/demos/graphics')
 
     To run a test script, just use the run command. For example, from the
-    ./rvctools subdirectory the jacobian test can be run by entering the
+    ./rvctools subdirectory the Jacobian test can be run by entering the
     following:
 
       >> run ./robots/tests/jacobian
 
-    If in the tests subdirectory, the run command is not required. Just
+    If in the ./tests subdirectory, the run command is not required. Just
     type the test script name.
 
       >> jacobian
