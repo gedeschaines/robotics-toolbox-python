@@ -5,7 +5,7 @@ This is a 1st update on the '[**old first attempt**](https://github.com/petercor
 
 #### Getting Started ####
 
-Download, unpack and run demos and tests as described in the README files, or optionally just build and install with the provided setup.py script (e.g., python setup.py install). Best use experience with RTB for Python is in IPython's interactive Pylab shell mode. For example, to display an animation of the Puma 560 (standard) robot transition from a nominal pose to a resting pose, invoke IPython in the demo or test directory and enter the six commands as shown below.
+Download, unpack and run demos and tests as described in the README files, or optionally just build and install with the provided setup.py script (e.g., python setup.py install). Best use experience with RTB for Python is in IPython's interactive Pylab shell mode. For example, to display an animation of the Puma 560 (standard) robot transition from a nominal pose to a ready pose, invoke IPython in the demo or test directory and enter the six commands as shown below.
 
 $ ipython --matplotlib
 
