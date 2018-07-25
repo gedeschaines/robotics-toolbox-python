@@ -44,9 +44,11 @@ The above will generate an animation of a stick figure rendering of the Puma 560
 8) Removed insidious leading tabs and unnecessary terminating semi-colons from executable statements when encountered during code editing.
 
 Although this effort is conducted on an Ubuntu 14.04 x86_64 Linux system with the Python, NumPy, Matplotlib and Octave versions identified below, the updated RTB for Python should work on non-Linux systems which support Python 2 or 3, and SciPy.
-* Python 2.7.6, IPython 1.2.1, NumPy 1.8.2, Matplotlib 1.3.1
-* Python 2.7.6, IPython 5.2.2, NumPy 1.12.0, Matplotlib 1.3.1
-* Python 3.4.3, IPython 5.3.0, NumPy 1.14.5, Matplotlib 2.2.2
+* Python 2.7.6,  IPython 1.2.1, NumPy 1.8.2,  Matplotlib 1.3.1
+* Python 2.7.6,  IPython 5.2.2, NumPy 1.12.0, Matplotlib 1.3.1
+* Python 2.7.13, IPython 5.3.0, NumPy 1.11.3, Matplotlib 1.5.1
+* Python 3.4.3,  IPython 5.3.0, NumPy 1.14.5, Matplotlib 2.2.2
+* Python 3.5.3,  IPython 5.3.0, NumPy 1.12.1, Matplotlib 2.0.2
 * Octave 4.0.2
 
 While Octave is not required to use RTB for Python, it is being utilized to run RTB MATLAB demo and test scripts for comparison with updated RTB for Python demos and tests. Several MATLAB and Octave scripts in the RTB v9.8 distribution required modification to execute in Octave 4.0.2. The modified scripts are provided in the ./Octave/rvctools subdirectory of this distribution. As with the Octave scripts in the RTB distribution, simply copy the scripts to the corresponding ./rvctools subdirectories in the default or user specific Octave function search path.
