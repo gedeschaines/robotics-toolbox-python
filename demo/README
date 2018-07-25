@@ -8,7 +8,7 @@ traj.py         trajectories in more detail
 animation.py    animations
 fkine.py        forward kinematics
 jacobian.py     Jacbians
-ikine.py        inverse dynamics
+ikine.py        inverse kinematics
 idyn.py         inverse dynamics, RNE etc.
 fdyn.py         forward dynamics
 
