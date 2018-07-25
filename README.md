@@ -64,7 +64,7 @@ While Octave is not required to use RTB for Python, it is being utilized to run 
 
 #### Attributions ####
 
-* Luis Fernando Lara Tobar and Peter Corke for **Robotics Toolbox for Python** provided as the [robitics-toolbox-python](https://github.com/petercorke/robotics-toolbox-python/) project.
+* Luis Fernando Lara Tobar and Peter Corke for **Robotics Toolbox for Python** provided as the [robotics-toolbox-python](https://github.com/petercorke/robotics-toolbox-python/) project.
 * Yeison Cardona for setup script and Python 3 enhancements to the **Robotics Toolbox for Python** provided in the PyPi [robotics-toolbox 0.1](https://pypi.org/project/robotics-toolbox/) project.
 
 #### Disclaimers ####
