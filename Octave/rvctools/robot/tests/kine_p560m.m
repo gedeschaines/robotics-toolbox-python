@@ -1,4 +1,4 @@
-% Test inverse kinematics for Puma 560 standard
+% Test inverse kinematics for Puma 560 modified
 
 echo off
 
