@@ -1,6 +1,6 @@
 %%% Robotics Toolbox for MATLAB -- Test plot with 2D robot
 %%%
-
+warning ("off", 'Octave:possible-matlab-short-circuit-operator');
 echo off;
 
 mdl_fourlink2d;
