@@ -1,7 +1,18 @@
 ## robotics-toolbox-python-update1 ##
 Robotics Toolbox for Python - Update 1
 
-This is a 1st update on the '[**old first attempt**](https://github.com/petercorke/robotics-toolbox-python)' at creating an open Python version of Peter Corke's [**Robotics Toolbox for MATLAB (RTB)**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox). Although the RTB for Python repository has languished over the past decade, there may still be some interest in its revival; even in its dated and rudimentary form. At this point, there is no intent to morph RTB for Python into another feature rich robot simulation tool extensively dependent on 3rd party modules and libraries. However, it should be noted that the present RTB for Python architecture relies exclusively on the 'pylab' convenience module, a practice not recommended by [**Matplotlib**](https://matplotlib.org/faq/usage_faq.html#matplotlib-pyplot-and-pylab-how-are-they-related) developers.
+This is a 1st update on the
+'[**old first attempt**](https://github.com/petercorke/robotics-toolbox-python)'
+at creating an open Python version of Peter Corke's
+[**Robotics Toolbox for MATLAB (RTB v9) &copy; 1993-2016**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox).
+Although the **Robotics Toolbox for Python &copy; 1993-2016** [repository](https://github.com/petercorke/robotics-toolbox-python) has languished over the past
+decade, there may still be some interest in its revival; even in its dated and
+rudimentary form. At this point, there is no intent to morph RTB for Python into
+another feature rich robot simulation tool extensively dependent on 3rd party packages
+and libraries. However, it should be noted that the present RTB for Python architecture
+relies exclusively on the 'pylab' convenience module, a practice not recommended by
+[Matplotlib](https://matplotlib.org/faq/usage_faq.html#matplotlib-pyplot-and-pylab-how-are-they-related)
+developers.
 
 #### Getting Started ####
 
