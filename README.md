@@ -4,7 +4,7 @@ Robotics Toolbox for Python - Update 1
 This is a 1st update on the
 '[**old first attempt**](https://github.com/petercorke/robotics-toolbox-python)'
 at creating an open Python version of Peter Corke's
-[**Robotics Toolbox for MATLAB (RTB v9) &copy; 1993-2016**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox).
+[**Robotics Toolbox for MATLAB (RTB) &copy; 1993-2018**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox).
 Although the **Robotics Toolbox for Python &copy; 1993-2016** [repository](https://github.com/petercorke/robotics-toolbox-python) has languished over the past
 decade, there may still be some interest in its revival; even in its dated and
 rudimentary form. At this point, there is no intent to morph RTB for Python into
