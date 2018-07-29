@@ -1,4 +1,10 @@
 """ Imports Robotics Toolbox module
+
+    This file is a temporary component of Robotics Toolbox for Python - Update1
+    development effort used to facilitate execution of Python scripts from within
+    an unpacked robotics-toolbox-python-update1 distribution directory work space.
+    If the RTB for Python - Update1 robot module is installed then 'import _robot'
+    statements in Python scripts may be replaced with 'import robot as robot'.
 """
 
 import os, sys
@@ -9,8 +15,11 @@ except ImportError:
     thisdir = os.path.dirname(__file__)
     libdir = None
     
-    # The following assumes this file is in a subdirectory adjacent to ./robot
-    
+    # The following assumes this file is in a subdirectory adjacent to
+    # ./robot in an unpacked robotics-toolbox-python-update1 distribution
+    # directory hierarchy on an Ubuntu 14.04 x86_64 linux platform with
+    # Python 2.7 or Python 3.
+
     if sys.version_info.major == 2:
         libdir = os.path.join(thisdir, '../build/lib.linux-x86_64-2.7')
     if sys.version_info.major == 3:
