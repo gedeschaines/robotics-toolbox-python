@@ -11,11 +11,11 @@ octave_rvct = getenv('OCTAVE_RVCT');
 if length(octave_rvct) > 0
     % Use OCTAVE_RVCT environment variable to assemble search paths.
     robotpath = strjoin({octave_rvct, 'robot'}, '/');
-    utilspath = strjoin({octave_rvct, 'robot/utils'}, '/');
+    utilspath = strjoin({robotpath, 'utils'}, '/');
 else
     % Use present working directory to assemble search paths
     robotpath = fullfile(rvcpath, 'robot');
-    utilspath = fullfile(rvcpath, 'robot/utils');
+    utilspath = fullfile(robotpath, 'utils');
 end
 
 % Prepend paths if corresponding directories exist.
