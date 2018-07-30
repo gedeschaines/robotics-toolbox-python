@@ -1,0 +1,29 @@
+## User startup file for Octave.
+##
+## This file should contain any commands that should be executed each
+## time Octave starts for this user at this site.
+
+warning ("off", 'Octave:shadowed-function');
+
+rvcpath = fileparts(mfilename('fullpath'));
+octave_rvct = getenv('OCTAVE_RVCT');
+
+if length(octave_rvct) > 0
+    % Use OCTAVE_RVCT environment variable to assemble search paths.
+    robotpath = strjoin({octave_rvct, 'robot'}, '/');
+    utilspath = strjoin({robotpath, 'utils'}, '/');
+else
+    % Use present working directory to assemble search paths
+    robotpath = fullfile(rvcpath, '../../Octave/rvctools/robot');
+    utilspath = fullfile(robotpath, 'utils');
+end
+
+% Prepend paths if corresponding directories exist.
+if exist(robotpath, 'dir') && exist(utilspath, 'dir')
+    % So demos and tests can locate utility functions.
+    addpath(utilspath, 0);
+    % So demos and tests can locate robot models.
+    addpath(robotpath, 0);
+end
+
+clear -v rvcpath octave_rvct robotpath utilspath
