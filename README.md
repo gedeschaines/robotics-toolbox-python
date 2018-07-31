@@ -4,7 +4,7 @@ Robotics Toolbox for Python - Update 1
 This is a 1st update on the
 '[**old first attempt**](https://github.com/petercorke/robotics-toolbox-python)'
 at creating an open Python version of Peter Corke's
-[**Robotics Toolbox for MATLAB (RTB) &copy; 1993-2018**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox).
+[**Robotics Toolbox for MATLAB**](http://petercorke.com/wordpress/toolboxes/robotics-toolbox)**<sup>&reg;</sup> (RTB) &copy; 1993-2018**.
 Although the **Robotics Toolbox for Python &copy; 1993-2016** [repository](https://github.com/petercorke/robotics-toolbox-python) has languished over the past
 decade, there may still be some interest in its revival; even in its dated and
 rudimentary form. At this point, there is no intent to morph RTB for Python into
@@ -47,7 +47,7 @@ on input line \[6] above.
 #### Guidelines for Update 1 ####
 
 1) Minimize changes to facilitate code comparison against sourced Python and
-MATLAB scripts.
+MATLAB<sup>&reg;</sup> scripts.
 2) Maintain the 'look and feel' of the original RTB functional interface.
 4) Preserve content of function's descriptive comment blocks, but modify to
 reflect code changes and adhere to original epydoc docstring conventions.
@@ -60,8 +60,8 @@ reflect code changes and adhere to original epydoc docstring conventions.
 3) Incorporated capability to display and record simple animated 2D and
 3D plots of frame transforms and robot manipulator poses.
 4) Extended functionality to run additional demo and test cases provided in RTB
-for Python and MATLAB distributions.
-5) Updated inverse kinematics in RTB for Python to match RTB version 9.
+for Python and MATLAB<sup>&reg;</sup> distributions.
+5) Updated inverse kinematics in RTB for Python to match RTB version 9.8.
 6) Fixed several code errors, and made some minor improvements -- notably in
 parsedemo and testparser.
 7) Corrected semantic and syntactic mistakes in some comments.
@@ -80,8 +80,8 @@ and SciPy.
 * Octave 4.0.2
 
 While Octave is not required to use RTB for Python, it is being utilized to run
-RTB MATLAB demo and test scripts for comparison with updated RTB for Python demos
-and tests. Several MATLAB and Octave scripts in the RTB v9.8 distribution required
+RTB for MATLAB<sup>&reg;</sup> demo and test scripts for comparison with updated RTB for Python demos
+and tests. Several MATLAB<sup>&reg;</sup> and Octave scripts in the RTB v9.8 distribution required
 modification to execute in Octave 4.0.2. The modified scripts are provided in the
 ./Octave/rvctools subdirectory of this distribution. As with the Octave scripts
 in the RTB distribution, simply copy the scripts to the corresponding ./rvctools
@@ -98,9 +98,9 @@ realistic manipulator motion.
 * RTB for Python and Octave 4 currently use 'lsode' method to integrate differential
 equations of motion for manipulator dynamics, but ode45 is available for both and
 could be a user selectable feature.
-* Encountered several instances where fundamental differences between MATLAB and
-Python array/matrix operations ([refer here](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html)),
-type coercion and copy properties caused program errors in RTB for Python.
+* Encountered several instances where fundamental differences between MATLAB<sup>&reg;</sup> and
+NumPy array/matrix operations ([refer here](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html)),
+and Python type coercion and copy properties caused program errors in RTB for Python.
 Unidentified instances may still exist.
 * Enhancements to robot pose graphics capabilities and features will require more
 sophisticated data structures for the Robot class (i.e., for the handle and plotopt
@@ -151,7 +151,7 @@ figure graphics were deemed sufficient to visualize important concepts, and to
 evaluate simulated manipulator kinematic and dynamic behavior. After the core
 functionality of RTB for Python has been updated, then user interface enhancements
 to provide the tutorial features and API available in newer versions of the Robotics
-Toolbox for MATLAB can be addressed.
+Toolbox for MATLAB<sup>&reg;</sup> can be addressed.
 
 #### Baseline Sources ####
 
