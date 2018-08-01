@@ -35,7 +35,7 @@ pause % press any key to continue
     close()
 
 # The trajectory demonstration has shown how a joint coordinate trajectory
-# may be generated; in this case from the zero pose to the resting pose.
+# may be generated; in this case from the zero pose to the ready pose.
     t = arange(0.0,2.0,0.056);   % generate a time vector
     [Q,_,_] = jtraj(qz, qr, t);  % generate joint coordinates trajectory
 
@@ -46,34 +46,50 @@ pause % press any key to continue
     rbplot(p560, Q);
 
 # A shadow appears on the ground which helps to give some better idea of
-# the 3D object's orientation. A stationary green stick figure denotes
-# the object's initial pose.
+# the 3D robot's orientation. A stationary green stick figure denotes
+# the robot's initial pose and dashed line connects the end-effector's
+# initial position to the target position shown as a red 'x'. Target
+# position in this case is the end-effector's expected position at the
+# pose computed for the last entry in joint coordinates trajectory 'Q'.
 #
 pause % press any key to continue
-
-# We can also place additional robots into a figure. Let's make a clone
-# of the Puma robot, but change its name and base location.
+    
+# We can create figures for multiple robots and also place additional
+# robots into a figure. Let's make a clone of the Puma robot, but change
+# its name and base location.
  
     p560_2 = p560.copy();
     p560_2.name = 'another Puma';
     p560_2.base = transl(-0.5, 0.5, 0);
-    rbplot(p560_2, Q, hold=True);
+    rbplot(p560_2, qz, phold=True);
 
 pause % press any key to continue
-
-# We can animate both robots simultanously.
-
     close()
-    [Q_2,_,_] = jtraj(qn, qr, t);
-    rbplot(p560, Q);
-    rbplot(p560_2, Q_2);
+    
+# We can animate both robots simultaneously on separate figures,
+
+    [Q_2,_,_] = jtraj(qn, qr, t);  % create joint trajectory for p560_2
+    rbplot(p560, Q);      % p560 motion from zero pose to ready pose
+    rbplot(p560_2, Q_2);  % p560_2 motion from nominal pose to ready pose
 
 pause % press any key to continue
 
+# or animate both robots simultaneously on the same figure.
+
+    close('all')
+    rbplot(p560, Q);  % Note: this starts an animator to render p560
+##                    %       and should be allowed to run to completion 
+##                    %       to prevent flickering animation when the
+##                    %       next call to rbplot starts an animator for
+##                    %       p560_2 which also renders p560.
+pause % press any key to continue
+    rbplot(p560_2, Q_2, phold=True);  % Note: this will animate p560_2
+##                                    %       and re-animate p560.
+pause % press any key to continue
+    close('all')
+    
 # We can also have multiple views of the same robot.
-#
 
-    close()
     rbplot(p560, qr);
 ### view(40,50);  ### Not implemented
     rbplot(p560, qr);
