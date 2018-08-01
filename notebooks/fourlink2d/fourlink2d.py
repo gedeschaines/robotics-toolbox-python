@@ -34,7 +34,9 @@ from robot.fourlink2d import *  # needed for robot fourlink2d model data
 
 
 # Although the following plot will be animated when initially drawn, the backend figure manager only provides the
-# capability to manipulate the last frame image. Note: do not close this interactive plot until after the next cell has been run to create the controlled video of the animation.
+# capability to manipulate the last frame image.
+# 
+# Note: do not close this interactive plot until after the cell following this next cell has been run to create the controlled animation.
 
 # In[4]:
 
@@ -43,7 +45,7 @@ fignum = plt.gcf().number  # rbplotAnims2D dictionary using the animator's manag
 print("fignum = %d" % fignum)
 
 
-# In order to control the animation, the animator's representation is converted to JavaScript and wrapped in HTML. Note that during the robot's joint space 'Q' movement its end-effector travels on an arc above the dashed line from its initial position to the target.
+# In order to control the animation, the animator's representation is converted to JavaScript and wrapped in HTML. Notice that during the robot's joint space 'Q' movement its end-effector travels on an arc above the dashed line from its initial position to the target. This is the result of the jtraj() function creating a 7th order polynomial with zero initial and final angular velocity and acceleration for each joint.
 
 # In[5]:
 
@@ -76,7 +78,9 @@ Traj = ctraj(t0, t1, 51)
 Qik = ikine(fl2d_2, Traj, q0=qn, m=[1,1,1,1,0,0], verbose=0)
 
 
-# What is important to observe in the following animation is that during robot \#1's 'Q' movement its end-effector moves on an arc above the dashed line between its initial position and target, while robot \#2's 'Qik' movement keeps its end-effector on the dashed line. This outcome is the result of inverse kinematics iteration using Jacobian pseudoinverse which computes a minimum energy trajectory between two points -- a straight line. 
+# What is important to observe in the following animation is that during robot \#1's 'Q' movement its end-effector moves on an arc above the dashed line between its initial position and target, while robot \#2's 'Qik' movement keeps its end-effector on the dashed line. This outcome for robot \#2 is the result of inverse kinematics iteration using Jacobian pseudoinverse which computes a minimum energy trajectory between two points -- a straight line.
+# 
+# Note: do not close this interactive plot until after the last cell has been run to create the controlled animation. 
 
 # In[8]:
 
