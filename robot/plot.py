@@ -319,7 +319,7 @@ def _rbinit2d():
 
 def _rbanimu2d(nf, robot, Q, lines2d, text2d):
     """
-    Callback function for 2D animation of robot manipulator link chain.
+    Robot animation updater for 2D robot manipulator link chain.
 
     @type nf: int
     @param nf: animation frame number (initial frame is 0)
@@ -517,7 +517,7 @@ def _rbinit3d():
 
 def _rbanimu3d(nf, robot, Q, lines3d, text3d):
     """
-    Callback function for 3D animation of robot manipulator link chain
+    Robot animation updater for 3D robot manipulator link chain.
 
     @type nf: int
     @param nf: animation frame number (initial frame is 0)
