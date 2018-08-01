@@ -19,6 +19,9 @@
       + Luis Fernando Lara Tobar and Peter Corke, originators of
         the Robotics Toolbox for Python project which is available
         at https://github.com/petercorke/robotics-toolbox-python/.
+      + Gary Deschaines for rbplot 2D and 3D animation routines
+        derived from the IK_Solver program which is available at
+        https://github.com/gedeschaines/IK_Solver).
     
     Disclaimers
     
@@ -167,14 +170,14 @@ def qplot(t, *args, **opts):
 rbplotAnims2D = {}   # dict of instantiated 2D rbplot animation objects
 rbplotClose2D = {}   # dict of instantiated 2D rbplot close handlers
 rbplotResize2D = {}  # dict of instantiated 2D rbplot resize handlers
-rbplotRbots2D = {}   # dict of 2D robots plotted per figure
+rbplotRbots2D = {}   # dict of 2D robot (name,obj,traj,lines,text) tuples per figure
 rbplotLines2D = {}   # line artists drawn on each active 2D rbplot figure
 rbplotText2D  = {}   # text artists drawn on each active 2D rbplot figure
 
 rbplotAnims3D = {}   # dict of instantiated 3D rbplot animation objects
 rbplotClose3D = {}   # dict of instantiated 3D rbplot close handlers
 rbplotResize3D = {}  # dict of instantiated 3D rbplot resize handlers
-rbplotRbots3D = {}   # dict of 3D robots plotted per figure
+rbplotRbots3D = {}   # dict of 3D robot (name,obj,traj,lines,text) tuples per figure
 rbplotLines3D = {}   # line artists drawn on each active 3D rbplot figure
 rbplotText3D  = {}   # text artists drawn on each active 3D rbplot figure
 
@@ -186,10 +189,10 @@ def _rbclose2d(event):
     :param event:
     :return:
     """
-    global rbplotRbots2D   # dict of 2D robots plotted per figure
+    global rbplotRbots2D   # dict of 2D robot (name,obj,traj,lines,text) tuples per figure
     global rbplotAnims2D   # dict of 2D rbplot animators per figure
     global rbplotClose2D   # dict of 2D rbplot close handlers per figure
-    global rbplotResize2D   # dict of 2D rbplot resize handlers per figure
+    global rbplotResize2D  # dict of 2D rbplot resize handlers per figure
 
     fig = event.canvas.figure
     if fig is not None:
@@ -214,7 +217,7 @@ def _rbclose3d(event):
     :param event:
     :return:
     """
-    global rbplotRbots3D   # dict of 3D robots plotted per figure
+    global rbplotRbots3D   # dict of 3D robot (name,obj,traj,lines,text) tuples per figure
     global rbplotAnims3D   # dict of 3D rbplot animators per figure
     global rbplotClose3D   # dict of 3D rbplot close handlers per figure
     global rbplotResize3D  # dict of 3D rbplot resize handlers per figure
@@ -277,7 +280,7 @@ def _rbinit2d():
     """
     Initialization function for 2D animation of robot manipulator link chain.
     
-    @see: L{rbplot}, L{_rbplot_add_artists2d}, L{_rbanim2d}
+    @see: L{rbplot}, L{_rbplot_add_artists2d}, L{_mrbanim2d}, L{_rbanim2d}, L{_rbanimu2d}
     """
     global rbplotRbots2D, rbplotLines2D, rbplotText2D
 
@@ -314,113 +317,167 @@ def _rbinit2d():
         return []
 
 
-def _rbanim2d(nf, fign, robot, Q, lines2d, text2d):
+def _rbanimu2d(nf, robot, Q, lines2d, text2d):
     """
     Callback function for 2D animation of robot manipulator link chain.
 
     @type nf: int
     @param nf: animation frame number (initial frame is 0)
-    @type fign: int
-    @param fign: rbplot figure number (not currently used)
     @type robot: RTB robot object
     @param robot: the n-dof robot manipulator link chain to animate
     @type Q: Mxn matrix (M rows of 1xn arrays)
-    @param Q: the manipulator chain joint space trajecto
+    @param Q: the manipulator chain joint space trajectory
+    @type lines2d: array of Line2D objects
+    @param lines2d: 2D line artists for drawing this robot
+    @type text2d: array of text objects
+    @param text2d: text artists for this robot's figure
 
-    @see: L{rbplot}, L{_rbplot_add_artists2d}
+    @see: L{rbplot}, L{_rbplot_add_artists2d}, L{_mrbanim2d}, L{_rbanim2d}, L{_rbinit2d}
     """
     if nf >= numrows(Q):
         # just in case FuncAnimation initialized with frames > numrows(Q)
-        return lines2d + text2d
-        
+        return lines2d, text2d
+
     q = np.mat(Q[nf])
-    
+
     # retrieve robot links and plotting parameters
-    
+
     n = robot.n
     L = robot.links
 
     fps = robot.get_handle('fps')
     mag = robot.get_handle('mag')
-    
-    # allocate storage for base and each link node
-    
-    x  = np.zeros(n+1)
-    y  = np.zeros(n+1)
-    xs = np.zeros(n+1)
-    ys = np.zeros(n+1)
-    
-    # initialize link chain lines
-    
-    b = transl(robot.base)  # note: b is a 3x1 matrix
-   
-    x[0] = b[0,0]
-    y[0] = b[1,0]
 
-    # compute the link transforms, and record the origin 
+    # allocate storage for base and each link node
+
+    x = np.zeros(n + 1)
+    y = np.zeros(n + 1)
+    xs = np.zeros(n + 1)
+    ys = np.zeros(n + 1)
+
+    # initialize link chain lines
+
+    b = transl(robot.base)  # note: b is a 3x1 matrix
+
+    x[0] = b[0, 0]
+    y[0] = b[1, 0]
+
+    # compute the link transforms, and record the origin
     # of each frame for the animation.
 
     t = robot.base
-    
-    for j in range(1,n+1):
-        t = t * L[j-1].tr(q[0,j-1])
-        x[j]  = t[0,3]
-        y[j]  = t[1,3]
+
+    for j in range(1, n + 1):
+        t = t * L[j - 1].tr(q[0, j - 1])
+        x[j] = t[0, 3]
+        y[j] = t[1, 3]
 
     t = t * robot.tool
-    
+
     # save initial pose in Cartesian coordinates
-    
+
     if nf == 0:
         robot.set_handle('x0', x.copy())
         robot.set_handle('y0', y.copy())
-    
+
     x0 = robot.get_handle('x0')
     y0 = robot.get_handle('y0')
 
-    # Note: Artists for this robot are at the end of 
+    # Note: Artists for this robot are at the end of
     # rbplotLines2D[fign] and rbplotText2D[fign] lists,
     # where fign is the figure number associated with
     # the FuncAnimation object drawing the artists.
-    
+
     # draw the effector to target line
-    
+
     xyzTgt = robot.get_handle('xyzTgt')
-    
+
     xe = x0[-1]
     ye = y0[-1]
     xt = xyzTgt[0]
     yt = xyzTgt[1]
-    
-    lines2d[-6].set_data([xt], [yt])          # target location
+
+    lines2d[-6].set_data([xt], [yt])  # target location
     lines2d[-5].set_data([xe, xt], [ye, yt])  # effector to target line
-    
+
     # draw the robot stick figure
-    
-    lines2d[-4].set_data(x0,y0)  # initial pose
-    lines2d[-3].set_data(x,y)    # current pose
+
+    lines2d[-4].set_data(x0, y0)  # initial pose
+    lines2d[-3].set_data(x, y)  # current pose
 
     # draw the wrist frame
-    
-    xv = t*(mat([mag,0,0,1]).T)
-    yv = t*(mat([0,mag,0,1]).T)
 
-    lines2d[-2].set_data([t[0,3], xv[0]], [t[1,3], xv[1]])  # x-axis
-    lines2d[-1].set_data([t[0,3], yv[0]], [t[1,3], yv[1]])  # y-axis
-             
+    xv = t * (mat([mag, 0, 0, 1]).T)
+    yv = t * (mat([0, mag, 0, 1]).T)
+
+    lines2d[-2].set_data([t[0, 3], xv[0]], [t[1, 3], xv[1]])  # x-axis
+    lines2d[-1].set_data([t[0, 3], yv[0]], [t[1, 3], yv[1]])  # y-axis
+
     # name and frame time
-    
+
     text2d[-2].set_text(robot.name)
-    text2d[-1].set_text('time = %.3f' % (float(nf)/fps))  # representative time
-    
+    text2d[-1].set_text('time = %.3f' % (float(nf) / fps))  # representative time
+
+    return lines2d, text2d
+
+
+def _rbanim2d(nf, robot, Q, lines2d, text2d):
+    """
+    Callback function for 2D animation of robot manipulator link chain.
+
+    @type nf: int
+    @param nf: animation frame number (initial frame is 0)
+    @type robot: RTB robot object
+    @param robot: the n-dof robot manipulator link chain to animate
+    @type Q: Mxn matrix (M rows of 1xn arrays)
+    @param Q: the manipulator chain joint space trajectory
+    @type lines2d: array of Line2D objects
+    @param lines2d: 2D line artists for drawing this robot
+    @type text2d: array of text objects
+    @param text2d: text artists for this robot's figure
+
+    @see: L{rbplot}, L{_rbplot_add_artists2d}, L{_rbanimu2d}, L{_rbinit2d}
+    """
+    (lines2d, text2d) = _rbanimu2d(nf, robot, Q, lines2d, text2d)
+
     return lines2d + text2d
+
+
+def _mrbanim2d(nf, fign):
+    """
+    Callback function for 2D animation of multiple robot manipulator link chains.
+
+    @type nf: int
+    @param nf: animation frame number (initial frame is 0)
+    @type fign: int
+    @param fign: rbplot figure number
+
+    @see: L{rbplot}, L{_rbplot_add_artists2d}, L{_rbanimu2d}, L{_rbinit2d}
+    """
+    global rbplotRbots2D  # dict of 2D robot (name,obj,traj,lines,text) tuples per figure
+    global rbplotLines2D  # line artists drawn for 2D plots of Q trajectories
+    global rbanimText2D   # text artists drawn for 2D plots of Q trajectories
+
+    if fign in rbplotRbots2D:
+        ib = 0
+        ie = ib + 6
+        for h in rbplotRbots2D[fign]:
+            (lines2d, text2d) = _rbanimu2d(nf, h[1], h[2], h[3], h[4])
+            rbplotLines2D[fign][ib:ie] = lines2d
+            rbplotText2D[fign][ib:ie] = text2d
+            ib = ie + 1
+            ie = ib + 6
+        return rbplotLines2D[fign] + rbplotText2D[fign]
+
+    else:
+        return []
 
 
 def _rbinit3d():
     """
     Initialization function for 3D animation of robot manipulator link chain.
     
-    @see: L{rbplot}, L{_rbplot_add_artists3d}, L{_rbanim3d}
+    @see: L{rbplot}, L{_rbplot_add_artists3d}, L{_mrbanim3d}, L{_rbanim3d}, L{_rbanimu3d}
     """
     global rbplotRbots3D, rbplotLines3D, rbplotText3D
 
@@ -458,30 +515,32 @@ def _rbinit3d():
         return []
 
 
-def _rbanim3d(nf, fign, robot, Q, lines3d, text3d):
+def _rbanimu3d(nf, robot, Q, lines3d, text3d):
     """
     Callback function for 3D animation of robot manipulator link chain
 
     @type nf: int
     @param nf: animation frame number (initial frame is 0)
-    @type fign: int
-    @param fign: rbplot figure number (not currently used)
     @type robot: RTB robot object
     @param robot: the n-dof robot manipulator link chain to animate
     @type Q: Mxn matrix (M rows of 1xn arrays)
     @param Q: the manipulator chain joint space trajectory
+    @type lines3d: array of Line3D objects
+    @param lines3d: 3D line artists for drawing this robot
+    @type text3d: array of text3D objects
+    @param text3d: text artists for this robot's figure
 
-    @see: L{rbplot}, L{_rbplot_add_artists3d}
+    @see: L{rbplot}, L{_rbplot_add_artists3d}, L{_mrbanimu3d}, L{_rbanim3d}, L{_rbinit3d}
     """
-    
+
     if nf >= numrows(Q):
         # just in case FuncAnimation initialized with frames > numrows(Q)
-        return lines3d + text3d
-    
+        return lines3d, text3d
+
     q = np.mat(Q[nf])
-    
+
     # retrieve robot links and plotting parameters
-    
+
     n = robot.n
     L = robot.links
 
@@ -490,101 +549,154 @@ def _rbanim3d(nf, fign, robot, Q, lines3d, text3d):
     zmin = robot.get_handle('zmin')
 
     # allocate storage for base, and each link node
-    
-    x  = np.zeros(n+1)
-    y  = np.zeros(n+1)
-    z  = np.zeros(n+1)
-    xs = np.zeros(n+1)
-    ys = np.zeros(n+1)
-    zs = np.zeros(n+1)
-    
+
+    x = np.zeros(n + 1)
+    y = np.zeros(n + 1)
+    z = np.zeros(n + 1)
+    xs = np.zeros(n + 1)
+    ys = np.zeros(n + 1)
+    zs = np.zeros(n + 1)
+
     # initialize link chain and shadow lines
-    
+
     b = transl(robot.base)  # note: b is a 3x1 matrix
-    
-    x[0]  = b[0,0]
-    y[0]  = b[1,0]
-    z[0]  = b[2,0]
-    xs[0] = b[0,0]
-    ys[0] = b[1,0]
+
+    x[0] = b[0, 0]
+    y[0] = b[1, 0]
+    z[0] = b[2, 0]
+    xs[0] = b[0, 0]
+    ys[0] = b[1, 0]
     zs[0] = zmin
 
-    # compute the link transforms, and record the origin 
+    # compute the link transforms, and record the origin
     # of each frame for the animation.
 
     t = robot.base
-    for j in range(1,n+1):
-        t = t * L[j-1].tr(q[0,j-1])
-        x[j]  = t[0,3]
-        y[j]  = t[1,3]
-        z[j]  = t[2,3]
-        xs[j] = t[0,3]
-        ys[j] = t[1,3]
+    for j in range(1, n + 1):
+        t = t * L[j - 1].tr(q[0, j - 1])
+        x[j] = t[0, 3]
+        y[j] = t[1, 3]
+        z[j] = t[2, 3]
+        xs[j] = t[0, 3]
+        ys[j] = t[1, 3]
         zs[j] = zmin
     t = t * robot.tool
 
     # save initial pose in Cartesian coordinates
-    
+
     if nf == 0:
         robot.set_handle('x0', x.copy())
         robot.set_handle('y0', y.copy())
         robot.set_handle('z0', z.copy())
-        
+
     x0 = robot.get_handle('x0')
     y0 = robot.get_handle('y0')
     z0 = robot.get_handle('z0')
 
-    # Note: Artists for this robot are at the end of 
+    # Note: Artists for this robot are at the end of
     # rbplotLines3D[fign] and rbplotText3D[fign] lists,
     # where fign is the figure number associated with
     # the FuncAnimation object drawing the artists.
-    
+
     # draw the effector to target line
-    
+
     xyzTgt = robot.get_handle('xyzTgt')
-    
+
     xe = x0[-1]
     ye = y0[-1]
     ze = z0[-1]
     xt = xyzTgt[0]
     yt = xyzTgt[1]
     zt = xyzTgt[2]
-    
-    lines3d[-9].set_data([xt], [yt])          # target location
+
+    lines3d[-9].set_data([xt], [yt])  # target location
     lines3d[-9].set_3d_properties([zt])
     lines3d[-8].set_data([xe, xt], [ye, yt])  # effector to target line
     lines3d[-8].set_3d_properties([ze, zt])
-    
+
     # draw the robot stick figure and the shadow
 
-    lines3d[-7].set_data(xs,ys)                            # shadow
+    lines3d[-7].set_data(xs, ys)  # shadow
     lines3d[-7].set_3d_properties(zs)
-    lines3d[-6].set_data([b[0,0],b[0,0]],[b[1,0],b[1,0]])  # base
-    lines3d[-6].set_3d_properties([zmin,b[2,0]])
-    lines3d[-5].set_data(x0,y0)                            # initial pose
+    lines3d[-6].set_data([b[0, 0], b[0, 0]], [b[1, 0], b[1, 0]])  # base
+    lines3d[-6].set_3d_properties([zmin, b[2, 0]])
+    lines3d[-5].set_data(x0, y0)  # initial pose
     lines3d[-5].set_3d_properties(z0)
-    lines3d[-4].set_data(x,y)                              # current pose
+    lines3d[-4].set_data(x, y)  # current pose
     lines3d[-4].set_3d_properties(z)
 
     # draw the wrist frame
 
-    xv = t*(mat([mag,0,0,1]).T)
-    yv = t*(mat([0,mag,0,1]).T)
-    zv = t*(mat([0,0,mag,1]).T)
+    xv = t * (mat([mag, 0, 0, 1]).T)
+    yv = t * (mat([0, mag, 0, 1]).T)
+    zv = t * (mat([0, 0, mag, 1]).T)
 
-    lines3d[-3].set_data([t[0,3], xv[0]], [t[1,3], xv[1]])  # x-axis
-    lines3d[-3].set_3d_properties([t[2,3], xv[2]])
-    lines3d[-2].set_data([t[0,3], yv[0]], [t[1,3], yv[1]])  # y-axis
-    lines3d[-2].set_3d_properties([t[2,3], yv[2]])
-    lines3d[-1].set_data([t[0,3], zv[0]], [t[1,3], zv[1]])  # z-axis
-    lines3d[-1].set_3d_properties([t[2,3], zv[2]])
-    
+    lines3d[-3].set_data([t[0, 3], xv[0]], [t[1, 3], xv[1]])  # x-axis
+    lines3d[-3].set_3d_properties([t[2, 3], xv[2]])
+    lines3d[-2].set_data([t[0, 3], yv[0]], [t[1, 3], yv[1]])  # y-axis
+    lines3d[-2].set_3d_properties([t[2, 3], yv[2]])
+    lines3d[-1].set_data([t[0, 3], zv[0]], [t[1, 3], zv[1]])  # z-axis
+    lines3d[-1].set_3d_properties([t[2, 3], zv[2]])
+
     # name and frame time
 
     text3d[-2].set_text(robot.name)
-    text3d[-1].set_text('time = %.3f' % (float(nf)/fps))  # representative time
-    
+    text3d[-1].set_text('time = %.3f' % (float(nf) / fps))  # representative time
+
+    return lines3d, text3d
+
+
+def _rbanim3d(nf, robot, Q, lines3d, text3d):
+    """
+    Callback function for 3D animation of robot manipulator link chain
+
+    @type nf: int
+    @param nf: animation frame number (initial frame is 0)
+    @type robot: RTB robot object
+    @param robot: the n-dof robot manipulator link chain to animate
+    @type Q: Mxn matrix (M rows of 1xn arrays)
+    @param Q: the manipulator chain joint space trajectory
+    @type lines3d: array of Line3D objects
+    @param lines3d: 3D line artists for drawing this robot
+    @type text3d: array of text3D objects
+    @param text3d: text artists for this robot's figure
+
+    @see: L{rbplot}, L{_rbplot_add_artists3d}, L{_rbanimu3d}, L{_rbinit3d}
+    """
+    (lines3d, text3d) = _rbanimu3d(nf, robot, Q, lines3d, text3d)
+
     return lines3d + text3d
+
+
+def _mrbanim3d(nf, fign):
+    """
+    Callback function for 3D animation of multiple robot manipulator link chains.
+
+    @type nf: int
+    @param nf: animation frame number (initial frame is 0)
+    @type fign: int
+    @param fign: rbplot figure number
+
+    @see: L{rbplot}, L{_rbplot_add_artists3d}, L{_rbanimu3d}, L{_rbinit3d}
+    """
+    global rbplotRbots3D  # dict of 3D robot (name,obj,traj,lines,text) tuples per figure
+    global rbplotLines3D  # line artists drawn for 3D plots of Q trajectories
+    global rbanimText3D   # text artists drawn for 3D plots of Q trajectories
+
+    if fign in rbplotRbots3D:
+        ib = 0
+        ie = ib + 9
+        for h in rbplotRbots3D[fign]:
+            (lines3d, text3d) = _rbanimu3d(nf, h[1], h[2], h[3], h[4])
+            rbplotLines3D[fign][ib:ie] = lines3d
+            rbplotText3D[fign][ib:ie] = text3d
+            ib = ie + 1
+            ie = ib + 9
+
+        return rbplotLines3D[fign] + rbplotText3D[fign]
+
+    else:
+        return []
 
 
 def _rbplot_add_artists2d(ax, robot):
@@ -730,14 +842,14 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
 
     @see: L{qplot}, L{jtraj}
     """
-    global rbplotRbots2D   # dict of 2D robots plotted per figure
+    global rbplotRbots2D   # dict of 2D robot (name,obj,traj,lines,text) tuples per figure
     global rbplotAnims2D   # dict of 2D rbplot animators
     global rbplotClose2D   # dict of 2D rbplot close handlers
     global rbplotResize3D  # dict of 2D rbplot resize handlers
     global rbplotLines2D   # line artists drawn for 2D plots of Q trajectories
     global rbanimText2D    # text artists drawn for 2D plots of Q trajectories
 
-    global rbplotRbots3D   # dict of 3D robots plotted per figure
+    global rbplotRbots3D   # dict of 3D robot (name,obj,traj,lines,text) tuples per figure
     global rbplotAnims3D   # dict of 3D rbplot animators
     global rbplotClose3D   # dict of 3D rbplot close handlers
     global rbplotResize3D  # dict of 3D rbplot resize handlers
@@ -792,11 +904,11 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
         fign = plt.gcf().number
         if plt.fignum_exists(fign):
             if Plot3D == 0:
-                add_robot = (fign in rbplotRbots2D) and\
-                            (robot.name not in rbplotRbots2D[fign])
+                add_robot = (fign in rbplotRbots2D) and \
+                            (robot.name not in rbplotRbots2D[fign][:][0])
             else:
                 add_robot = (fign in rbplotRbots3D) and \
-                            (robot.name not in rbplotRbots3D[fign])
+                            (robot.name not in rbplotRbots3D[fign][:][0])
         else:
             add_robot = False
     else:
@@ -812,19 +924,20 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
         fig = plt.gcf()
         ax = fig.gca()
         if Plot3D == 0:
-            rbplotRbots2D[fign].append(robot.name)
             # add artists to draw 2D robot
             (lines, text) = _rbplot_add_artists2d(ax, robot)
+            rbplotRbots2D[fign].append((robot.name, robot, Q, lines, text))
             rbplotLines2D[fign] = rbplotLines2D[fign] + lines
             rbplotText2D[fign] = rbplotText2D[fign] + text
         else:
-            rbplotRbots3D[fign].append(robot.name)
             # getfigure's axes
             ax = fig.gca()
             # add artists to draw 3D robot
             (lines, text) = _rbplot_add_artists3d(ax, robot)
+            rbplotRbots3D[fign].append((robot.name, robot, Q, lines, text))
             rbplotLines3D[fign] = rbplotLines3D[fign] + lines
             rbplotText3D[fign] = rbplotText3D[fign] + text
+
         fig.canvas.draw()
 
     else:
@@ -850,11 +963,6 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
         zlims = robot.get_plotopt('zlim')
 
         if Plot3D == 0:
-            # add robot to rbplot 2D robot list
-            if fign in rbplotRbots2D:
-                rbplotRbots2D[fign] = [robot.name]
-            else:
-                rbplotRbots2D.update({fign: [robot.name]})
             # create axes for drawing 2D artists
             ax = fig.add_subplot(111, autoscale_on=False)  # returns AxesSubplot
             ax.set_title(title)
@@ -864,24 +972,25 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
             ax.set_ylim(ylims)
             ax.set_aspect('equal')
             ax.grid()
-            # add 2D artists to axes
+            # create 2D artists to be drawn on axes 'ax'
             (lines, text) = _rbplot_add_artists2d(ax, robot)
+
             if fign in rbplotLines2D:
+                # replace robot in rbplot 2D robot list
+                rbplotRbots2D[fign] = [(robot.name, robot, Q, lines, text)]
                 # replace previous 2D artist lists for this figure
                 rbplotLines2D[fign] = lines
                 rbplotText2D[fign] = text
             else:
+                # add robot to rbplot 2D robot list
+                rbplotRbots2D.update({fign: [(robot.name, robot, Q, lines, text)]})
                 # add key and 2D artist lists for this new figure
                 rbplotLines2D.update({fign: lines})
                 rbplotText2D.update({fign: text})
+
             fig.canvas.draw()
 
         else:
-            # add robot to rbplot 3D robot list
-            if fign in rbplotRbots3D:
-                rbplotRbots3D[fign] = [robot.name]
-            else:
-                rbplotRbots3D.update({fign: [robot.name]})
             # create axes for drawing 3D artists
             ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
             ax.set_title(title)
@@ -893,16 +1002,22 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
             ax.set_zlim3d(zlims)
             #ax.set_aspect('equal')
             ax.grid()
-            # add 3D artists to axes
+            # create 3D artists to be draw on axes 'ax'
             (lines, text) = _rbplot_add_artists3d(ax, robot)
+
             if fign in rbplotLines3D:
+                # replace robot in rbplot 3D robot list
+                rbplotRbots3D[fign] = [(robot.name, robot, Q, lines, text)]
                 # replace previous 3D artist lists for this figure
                 rbplotLines3D[fign] = lines
                 rbplotText3D[fign] = text
             else:
+                # add robot to rbplot 3D robot list
+                rbplotRbots3D.update({fign: [(robot.name, robot, Q, lines, text)]})
                 # add key and 3D artist lists for this new figure
                 rbplotLines3D.update({fign: lines})
                 rbplotText3D.update({fign: text})
+
             fig.canvas.draw()
 
             zlim = ax.get_zlim3d()
@@ -917,9 +1032,9 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
     tdel_msec = 1000.0*tdel
     tmsec0    = 1000.0*time.clock()
     if Plot3D == 0:
-        _rbanim2d(0, fign, robot, Q, rbplotLines2D[fign], rbplotText2D[fign])
+        _rbanim2d(0, robot, Q, rbplotLines2D[fign], rbplotText2D[fign])
     else:
-        _rbanim3d(0, fign, robot, Q, rbplotLines3D[fign], rbplotText3D[fign])
+        _rbanim3d(0, robot, Q, rbplotLines3D[fign], rbplotText3D[fign])
     tmsec1    = 1000.0*time.clock()
     tstep     = tmsec1 - tmsec0
     #interval  = ceil(tmsec1-tmsec0)  # allows faster than real-time
@@ -969,7 +1084,9 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
             rbplotResize3D.update({fign: cid})
     """
 
-    fig.canvas.mpl_connect('button_press_event', robot.onclick)
+    # This will eventually be used for positioning a target, or
+    # picking a robot's link or joint.
+    # fig.canvas.mpl_connect('button_press_event', robot.onclick)
 
     # Specify animation parameters and assign functions.
    
@@ -981,17 +1098,15 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
 
     if Plot3D == 0:
         _rbinit2d()
-        anim = animation.FuncAnimation(fig, _rbanim2d,
-                                       fargs=(fign, robot, Q, rbplotLines2D[fign],
-                                              rbplotText2D[fign]),
+        anim = animation.FuncAnimation(fig, _mrbanim2d,
+                                       fargs=(fign,),
                                        init_func=_rbinit2d,
                                        frames=nframes, blit=blit,
                                        interval=interval, repeat=False)
     else:
         _rbinit3d()
-        anim = animation.FuncAnimation(fig, _rbanim3d,
-                                       fargs=(fign, robot, Q, rbplotLines3D[fign],
-                                              rbplotText3D[fign]),
+        anim = animation.FuncAnimation(fig, _mrbanim3d,
+                                       fargs=(fign,),
                                        init_func=_rbinit3d,
                                        frames=nframes, blit=blit,
                                        interval=interval, repeat=False)
