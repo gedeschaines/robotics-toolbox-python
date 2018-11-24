@@ -13,15 +13,20 @@ for MATLAB respository.
 Since the base source code used in the RTB for Python update effort is 10 years
 old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made to
 the scripts identified below may be irrelevant with regard to newer versions of
-RTB.  Also, with only Octave v4.0.2 currenly available to run RTB for MATLAB,
-there is a possibility that some modifications to non-Octave specific scripts
-may be incompatable with the latest versions of both MATLAB and Octave.
+RTB.  Also, with only Octave v4.0.2 and v4.2.2 currently available to run RTB
+for MATLAB, there is a possibility that some modifications to non-Octave specific
+scripts may be incompatable with the latest versions of both MATLAB and Octave.
 
 
 List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts.
 ---------------------------------------------------------------------------------
 
 -./rvctools
+  |
+  + ./common (these modifications may be made to prevent deprecation warning)
+  |  |
+  |  +- about.m       -- change occurances of isstr() to ischar()
+  |  +- tb_optparse.m -- change occurances of isstr() to ischar()
   |
   +-./robot
      |
