@@ -68,10 +68,10 @@ parsedemo and testparser.
 8) Removed insidious leading tabs and unnecessary terminating semi-colons from
 executable statements when encountered during code editing.
 
-Although this effort is conducted on an Ubuntu 14.04 x86_64 Linux system with
-the Python, NumPy, Matplotlib and Octave versions identified below, the updated
-RTB for Python should work on non-Linux systems which support Python 2 or 3,
-and SciPy.
+Although this effort was primarily conducted on an Ubuntu 14.04 x86_64 Linux
+system with the Python, NumPy, Matplotlib and Octave versions identified below,
+the updated RTB for Python should work on non-Linux systems which support Python
+ 2 or 3, and SciPy.
 * Python 2.7.6,  IPython 1.2.1, NumPy 1.8.2,  Matplotlib 1.3.1
 * Python 2.7.6,  IPython 5.2.2, NumPy 1.12.0, Matplotlib 1.3.1
 * Python 2.7.13, IPython 5.3.0, NumPy 1.11.3, Matplotlib 1.5.1
@@ -79,10 +79,16 @@ and SciPy.
 * Python 3.5.3,  IPython 5.3.0, NumPy 1.12.1, Matplotlib 2.0.2
 * Octave 4.0.2
 
+Recent effort have also been conducted on an Ubuntu 16.04 x86_64 Linux system
+with the Python, NumPy, Matplotlib and Octave versions identified below.
+* Python 2.7.12, IPython 2.4.1, NumPy 1.11.0, Matplotlib 1.5.1
+* Python 3.5.2,  IPython 7.1.1, NumPy 1.11.0, Matplotlib 3.0.2
+* Octave 4.2.2
+
 While Octave is not required to use RTB for Python, it is being utilized to run
 RTB for MATLAB<sup>&reg;</sup> demo and test scripts for comparison with updated RTB for Python demos
 and tests. Several MATLAB<sup>&reg;</sup> and Octave scripts in the RTB v9.8 distribution required
-modification to execute in Octave 4.0.2. The modified scripts are provided in the
+modification to execute in Octave 4.0.2 and 4.2.2. The modified scripts are provided in the
 ./Octave/rvctools subdirectory of this distribution. As with the Octave scripts
 in the RTB distribution, simply copy the scripts to the corresponding ./rvctools
 subdirectories in the default or user specific Octave function search path.
@@ -92,7 +98,10 @@ subdirectories in the default or user specific Octave function search path.
 * Non-convergent inverse kinematic iterations do not produce the same error norms
 among Python 2, 3 and Octave, which may indicate an implementation error in the
 ikine function or affects of possible differences in numerical precision of
-utilized linear algebra library functions.
+utilized linear algebra library functions. It was noted that on an Ubuntu 16.04
+platform, Pythons 2.7.12 and 3.5.2 with Numpy 1.11.0 gave identical results for
+the inverse kinematic test cases which tends to indicate differing results may
+be attributed to the Numpy versions.
 * Clamping joint movements in the ikine solver iteration loop is needed to produce
 realistic manipulator motion.
 * RTB for Python and Octave 4 currently use 'lsode' method to integrate differential
