@@ -1290,8 +1290,8 @@ def trplot(T, fig=None, **opts):
     tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
     
     # draw orthogonal xyz axes labels
-    ax = tranim_text3D[0].get_axes()  # get axes instance the text3d
-    if ax is not None:                # artists reside in
+    ax = tranim_text3D[0].axes  # get axes instance the text3d
+    if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
         tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
@@ -1355,8 +1355,8 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
     
     # draw orthogonal xyz axes labels
-    ax = tranim_text3D[0].get_axes()  # get axes instance the text3d
-    if ax is not None:                # artists reside in
+    ax = tranim_text3D[0].axes  # get axes instance the text3d
+    if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
         tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
