@@ -47,7 +47,7 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
     ./rvctools subdirectory the Jacobian test can be run by entering the
     following:
 
-      >> run ./robots/tests/jacobian
+      >> run ./robot/tests/jacobian
 
     If in the ./tests subdirectory, the run command is not required. Just
     type the test script name.
