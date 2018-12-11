@@ -44,6 +44,13 @@ on input line \[6] above.
 
 <a href="https://youtu.be/7zvrEWacG5Q"><img src="./docs/images/Puma_560.jpg" width="600" height="400" alt="Puma 560 robot in RTB for Python"></a>
 
+Several Jupyter notebook examples of RTB for Python are presented in the Robotics
+Toolbox for Python - Update 1 repository [Wiki](https://github.com/gedeschaines/robotics-toolbox-python/wiki/RTB-for-Python-Update-1:--Jupyter-Notebook-Examples)
+on GitHub. These notebooks may be viewed online by selecting the associated \[nbviewer]
+link. Consult the [README.txt](./notebooks/README.txt) in the notebooks directory
+for instructions on running Jupyter IPython notebooks or corresponding Python source
+files locally.
+
 #### Guidelines for Update 1 ####
 
 1) Minimize changes to facilitate code comparison against sourced Python and
