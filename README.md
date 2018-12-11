@@ -47,9 +47,9 @@ on input line \[6] above.
 Several Jupyter notebook examples of RTB for Python are presented in the Robotics
 Toolbox for Python - Update 1 repository [Wiki](https://github.com/gedeschaines/robotics-toolbox-python/wiki/RTB-for-Python-Update-1:--Jupyter-Notebook-Examples)
 on GitHub. These notebooks may be viewed online by selecting the associated \[nbviewer]
-link. Consult the [README.txt](./notebooks/README.txt) in the notebooks directory
-for instructions on running Jupyter IPython notebooks or corresponding Python source
-files locally.
+link. Consult the [README.txt](./notebooks/README.txt) file in the notebooks directory
+for instructions on running Jupyter IPython notebook examples and corresponding Python
+source files locally.
 
 #### Guidelines for Update 1 ####
 
