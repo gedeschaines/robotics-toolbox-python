@@ -50,6 +50,7 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
      |  +- ikine.m     -- updated to match robot/@SerialLink/ikine.m in RTB repo master
      |  +- inertia.m   -- changed call robot.inertia to inertia(robot on line 44
      |  +- maniplty.m  -- fixed opt.method detection logic
+     |  +- plot.m      -- fixed joint and wrist labels to be nonpersistent
      |  +- rne_dh.m    -- updated to match robot/@SerialLink/rne_dh.m in RTB repo master
      |  +- rne_mdh.m   -- changed tranpose operator to .', fixed for Pc terms
      |  +- subsref.m   -- add case for 'animate'
