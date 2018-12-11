@@ -1,15 +1,16 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ### This notebook examines Puma 560 dynamics with the Robotics Toolbox (RTB) for Python - Update1. ###
 
 # In[1]:
 
+
 """ Matplotlib imports
 """
 import matplotlib
 matplotlib.use('Qt4Agg')
-get_ipython().magic('matplotlib notebook')
+get_ipython().run_line_magic('matplotlib', 'notebook')
 import matplotlib.pyplot as plt  # needed to get current figure number using plt.gcf().number
 from matplotlib import rc        # needed to set Matplotlib animation._repr_html_()
 from PIL import Image            # needed to open images created by the RTB for MATLAB Octave variant
@@ -18,6 +19,7 @@ rc('animation', html='jshtml')   # Matplotlib animations will be HTML wrapped Ja
 
 
 # In[2]:
+
 
 """ RBT for Python robot imports
 """
@@ -31,6 +33,7 @@ from robot.puma560 import *   # needed for robot puma560 model data
 
 # In[3]:
 
+
 tic()
 [t, q, qd] = fdyn(p560.nofriction(), 0.0, 1.0)
 print("%s" % toc())
@@ -40,13 +43,15 @@ print("%s" % toc())
 
 # In[4]:
 
+
 import os.path
 if not os.path.isfile("./octave_fdyn3d_plot.jpg"):
     from os import system
-    system("/usr/local/bin/octave ./octave_dyn3d.m")
+    system("/usr/bin/octave ./octave_dyn3d.m")
 
 
 # In[5]:
+
 
 # Create and display joint angle time history plots for the first three joints of the Puma 560 manipulator.
 figure(1)
@@ -70,6 +75,7 @@ ylabel('Joint 3 (deg)')
 
 # In[6]:
 
+
 # Display the same joint angle time history plots created by the RTB for MATLAB Octave variant.
 if os.path.isfile("./octave_fdyn3d_plot.jpg"):
     figure()  # create new figure
@@ -82,6 +88,7 @@ if os.path.isfile("./octave_fdyn3d_plot.jpg"):
 
 # In[7]:
 
+
 rbplot(p560, q)            # rbplot() creates a Matplotlib animation 3D object and saves a handle to it in the 
 fignum = plt.gcf().number  # rbplotAnims3D dictionary using the animator's managed figure number as keyword.
 print("fignum = %d" % fignum)
@@ -89,7 +96,11 @@ print("fignum = %d" % fignum)
 
 # In[8]:
 
-# Display plot of final Puma 560 pose from the animation created by the RTB for MATLAB Octave variant.
+
+# Display plot of final Puma 560 pose from animation created by the RTB for MATLAB Octave variant.
+# Note: image displayed below was created by running octave_fdyn3d.m within the Octave GUI, then
+# using the figure rotation feature to adjust the view orientation before saving the final frame
+# as a JPEG file.
 if os.path.isfile("./octave_fdyn3d_anim.jpg"):
     figure()  # create new figure
     im  = Image.open("octave_fdyn3d_anim.jpg", "r")
@@ -99,6 +110,13 @@ if os.path.isfile("./octave_fdyn3d_anim.jpg"):
 
 # In[9]:
 
+
 # Display the RTB for Python rbplot() animation of the Puma 560 as a controlled animation.
 rbplotAnims3D[fignum]
+
+
+# In[ ]:
+
+
+
 
