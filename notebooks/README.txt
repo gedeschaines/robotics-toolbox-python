@@ -21,5 +21,5 @@ was traced to the runtime load library path permitting Qt5 libraries other
 than those associated with the Ubuntu 16.04 Octave package to be loaded. One
 possible fix involves invoking Octave with the -W (--no-window-system) option.
 However, this option precludes graphical output and consequently cannot be
-used when executing the octave_fdyn3d.m script of the dynamics3d example since
+used when executing the octave_dyn3d.m script of the dynamics3d example since
 plots and animations are created.

@@ -98,7 +98,7 @@ print("fignum = %d" % fignum)
 
 
 # Display plot of final Puma 560 pose from animation created by the RTB for MATLAB Octave variant.
-# Note: image displayed below was created by running octave_fdyn3d.m within the Octave GUI, then
+# Note: image displayed below was created by running octave_dyn3d.m within the Octave GUI, then
 # using the figure rotation feature to adjust the view orientation before saving the final frame
 # as a JPEG file.
 if os.path.isfile("./octave_fdyn3d_anim.jpg"):
