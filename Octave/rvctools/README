@@ -10,10 +10,10 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
 
 (2) The scripts in the ./robot/@Link and ./robot/@SerialLink subdirectories
     of this README file must replace like named scripts installed in step (1).
-    There is no need to relocate scripts in the ./robot, ./robot/common,
-    ./robot/demos, ./robot/tests and ./robot/utils subdirectories. The next
-    two steps will provide the means for Octave to locate the robot models
-    and utility scripts at runtime.
+    There is no need to relocate scripts in ./common, ./robot, ./robot/demos,
+    ./robot/tests and ./robot/utils subdirectories. The next two steps will
+    provide the means for Octave to locate the robot models and utility scripts
+    at runtime.
 
 (3) Create an exported environment variable named OCTAVE_RVCT and assign to
     it the complete path to the directory containing this README file. The
