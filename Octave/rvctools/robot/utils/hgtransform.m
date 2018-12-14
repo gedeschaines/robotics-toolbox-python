@@ -109,9 +109,9 @@ function xform_data (hgt, hlist)
     endif
     z_empty = isempty (zd);
 
-    if (isempty (zd))
+    if (z_empty)
       ## Common case of 2-D data.
-      zd = zeros (1, numel (xd));
+      zd = zeros (numel (xd), 1);
     elseif (isvector (xd) && isvector (yd))
       ## Handle surface data which may be a vector/matrix combination
       if (isvector (zd))

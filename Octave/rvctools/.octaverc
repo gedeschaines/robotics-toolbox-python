@@ -10,20 +10,28 @@ octave_rvct = getenv('OCTAVE_RVCT');
 
 if length(octave_rvct) > 0
     % Use OCTAVE_RVCT environment variable to assemble search paths.
+    commonpath = strjoin({octave_rvct, 'common'}, '/');
     robotpath = strjoin({octave_rvct, 'robot'}, '/');
     utilspath = strjoin({robotpath, 'utils'}, '/');
 else
     % Use present working directory to assemble search paths
+    commonpath = fullfile(rvcpath, 'common');
     robotpath = fullfile(rvcpath, 'robot');
     utilspath = fullfile(robotpath, 'utils');
 end
 
 % Prepend paths if corresponding directories exist.
+if exist(commonpath, 'dir')
+    % So common functions override those originally installed
+    addpath(commonpath, 0);
+end
 if exist(robotpath, 'dir') && exist(utilspath, 'dir')
     % So demos and tests can locate utility functions.
     addpath(utilspath, 0);
-    % So demos and tests can locate robot models.
+    % So demos and tests can locate robot models and modidied
+    % trplot and trplot2 functions override those originally
+    % installed
     addpath(robotpath, 0);
 end
 
-clear -v rvcpath octave_rvct robotpath utilspath
+clear -v rvcpath octave_rvct commonpath robotpath utilspath
