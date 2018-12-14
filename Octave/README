@@ -86,7 +86,7 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
         |
         +- assertEqual.m -- new function to support quaternion and transform tests
         +- crossp.m      -- new function to support transform test
-        +- hgtransform.m -- unmodified scripts/plot/util/hgtransform.m from Octave repo master
+        +- hgtransform.m -- fix to 2D zd in scripts/plot/util/hgtransform.m from Octave repo master
         +- mat.m         -- modified unit_test/old/mat.m from RTB repo master
 
 
