@@ -20,8 +20,9 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
     path should end with '/rvctools'.
 
 (4) If the provided .octaverc file is within a working directory from which
-    Octave is executed, the complete paths to the ./robot and robot/utils
-    subdirectories will be prepended to Octave's function search path.
+    Octave is executed, the complete paths to the ./common, ./robot and 
+    robot/utils subdirectories will be prepended to Octave's function search
+    path.
 
 (5) Since the mdl_puma560.m, mdl_puma560akb.m and mdl_stanford.m scripts are
     present in the ./robot subdirectory, Octave will issue warnings about
