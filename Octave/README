@@ -13,9 +13,16 @@ for MATLAB respository.
 Since the base source code used in the RTB for Python update effort is 10 years
 old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made to
 the scripts identified below may be irrelevant with regard to newer versions of
-RTB.  Also, with only Octave v4.0.2 and v4.2.2 currently available to run RTB
-for MATLAB, there is a possibility that some modifications to non-Octave specific
-scripts may be incompatable with the latest versions of both MATLAB and Octave.
+RTB. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b Home Edition
+currently available to run RTB for MATLAB, there is a possibility that some
+modifications may be incompatable with older versions of Octave and MATLAB, and
+newer versions of Octave.
+
+It should be understood that there are some functions in MATLAB utilized by RTB
+for MATLAB that are not yet a core functionality in Octave (e.g., hgtransform)
+or are implemented in different manner (e.g., classes); necessitating syntactic
+changes to scripts. The isOctave() function has been introduced to wrap Octave
+specific code in order to retain a modified script's compatibility with MATLAB.
 
 
 List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts.
@@ -26,8 +33,9 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
   + ./common
   |  |
   |  +- about.m       -- change occurances of deprecated isstr() to ischar()
+  |  +- isOctave.m    -- added to wrap Octave and MATLAB code statements
   |  +- tb_optparse.m -- change occurances of deprecated isstr() to ischar()
-  |  +- plot2.m       -- change plot() to line() to fix trplot and trplot2 hgtransform
+  |  +- plot2.m       -- use isOctave to handle trplot and trplot2 hgtransform
   |
   +-./robot
      |
@@ -38,8 +46,8 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
      +- mdl_puma560akb.m -- cosmetic changes, added robot specific named q vectors
      +- mdl_puma560std.m -- same as mdl_puma560.m but creates robot named 'p560s'
      +- mdl_stanford.m   -- cosmetic changes to RTB v9.8 version
-     +- trplot.m         -- fixed to correct problem with hgtransform of 3D lines
-     +- trplot2.m        -- fixed to correct problem with hgtrandform of 2D lines
+     +- trplot.m         -- use isOctave to handle Octave/MATLAB hgtransform of 3D lines
+     +- trplot2.m        -- use isOctave to handle Octave/MATLAB hgtrandform of 2D lines
      |
      +-./@Link
      |  |

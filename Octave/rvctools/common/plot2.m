@@ -13,9 +13,17 @@ function h = plot2(p1, varargin)
 
     if ndims(p1) == 2
         if numcols(p1) == 3,
-            hh = line(p1(:,1), p1(:,2), p1(:,3), varargin{:});
+            if isOctave
+                hh = line(p1(:,1), p1(:,2), p1(:,3), varargin{:});
+            else
+                hh = plot3(p1(:,1), p1(:,2), p1(:,3), varargin{:});
+            end
         else
-            hh = line(p1(:,1), p1(:,2), varargin{:});
+            if isOctave
+                hh = line(p1(:,1), p1(:,2), varargin{:});
+            else
+                hh = plot(p1(:,1), p1(:,2), varargin{:});
+            end
         end
         if nargout == 1,
             h = hh;

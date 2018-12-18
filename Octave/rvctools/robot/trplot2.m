@@ -129,9 +129,16 @@ function hout = trplot2(T, varargin)
             set(h, 'Parent', hg);
         end
     else
-        for i=1:2
-            h = plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color);
-            set(h, 'Parent', hg);
+        if isOctave
+            for i=1:2
+                h = plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color);
+                set(h, 'Parent', hg);
+            end
+        else
+            for i=1:2
+                plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color, ...
+                      'Parent', hg);
+            end
         end
     end
 
