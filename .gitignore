@@ -6,6 +6,7 @@ temp/*
 work/*
 __pycache__/*
 None0000000.png
+octave-workspace
 *.py[co]
 *.log
 *~
