@@ -1,12 +1,13 @@
 % Test dynamics primatives
 
+more off
+echo off
+
 q1 = mat(ones(1,6))
 
 % test the RNE primitive for DH using standard Puma560
 mdl_puma560;
 p560
-
-#echo on
 
 % -- use qz with three state parameters
 qz
@@ -29,8 +30,10 @@ rne(p560, [z;z;z])
 
 % test the RNE primitive for MDH using modified Puma560
 cd ..
-run ./robot/mdl_puma560akb
-cd ./test
+run mdl_puma560akb
+if exist('./test', 'dir')
+    cd ./test
+endif
 p560m
 
 % -- use qz with three state parameters
@@ -74,4 +77,3 @@ rne(p560, q, qd, qdd)
 echo off
 
 p560.plot(q,'joints','wrist','shadow')
-

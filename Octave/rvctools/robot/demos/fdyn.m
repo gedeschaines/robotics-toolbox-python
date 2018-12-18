@@ -18,7 +18,7 @@
 % http://www.petercorke.com
 
 %%begin
-echo on
+echo off
 
 % Forward dynamics is the computation of joint accelerations given position
 % and velocity state, and actuator torques. It is useful in simulation of 
