@@ -71,7 +71,7 @@
 
 % HANDLES:
 %
-%  A robot comprises a bunch of individual graphical elements and these are 
+% A robot comprises a bunch of individual graphical elements and these are 
 % kept in a structure which can be stored within the .handle element of a
 % robot object.
 %
@@ -83,9 +83,9 @@
 %	h.xt		wrist vector labels
 %	h.yt
 %	h.zt
-% h.joint(i)        the joint i cylinder or box
-% h.jointaxis(i)    the line segment that is joint i axis
-% h.jointlabel(i)   text for joint i label
+%   h.joint(i)        the joint i cylinder or box
+%   h.jointaxis(i)    the line segment that is joint i axis
+%   h.jointlabel(i)   text for joint i label
 %
 %  The plot function returns a new robot object with the handle element set.
 %
@@ -343,8 +343,8 @@ function rnew = plot(robot, tg, varargin)
 					'linestyle', '--', ...
 					'erasemode', 'xor');
           
-        % define joint label
-			  h.jointlabel(i) = text(0, 0, 0, num2str(i), 'HorizontalAlignment', 'Center');
+                % define joint label
+			    h.jointlabel(i) = text(0, 0, 0, num2str(i), 'HorizontalAlignment', 'Center');
 			end
 		end
 		h.mag = mag;
@@ -358,11 +358,11 @@ function rnew = plot(robot, tg, varargin)
 
 	rh = findobj('Tag', robot.name);
 	for r=1:repeat,
-	  for p=1:np,
-		  for r=rh',
-			  animate( get(r, 'UserData'), tg(p,:));
-      end
-	  end
+	    for p=1:np,
+		    for r=rh',
+			    animate( get(r, 'UserData'), tg(p,:));
+            end
+	    end
 	end
 
 	% save the last joint angles away in the graphical robot
@@ -403,7 +403,6 @@ function animate(robot, q)
 	for j=1:n,
 		Tn(:,:,j) = t;
 		
-
 		t = t * L(j).A(q(j));
 
 		x = [x; t(1,4)];
@@ -444,7 +443,7 @@ function animate(robot, q)
 
 			xyzl = Tn(:,:,j) * xyz_line;
 			set(h.jointaxis(j), 'Xdata', xyzl(1,:), 'Ydata', xyzl(2,:), 'Zdata', xyzl(3,:));
-      set(h.jointlabel(j), 'position', [xyzl(1,1) xyzl(2,1) xyzl(3,1)]);
+            set(h.jointlabel(j), 'position', [xyzl(1,1) xyzl(2,1) xyzl(3,1)]);
 		end
 	end
 
@@ -472,9 +471,10 @@ function animate(robot, q)
 		
 		set(h.xt, 'position', [xv(1) xv(2) xv(3)]);
 		set(h.yt, 'position', [yv(1) yv(2) yv(3)]);
-    set(h.zt, 'position', [zv(1) zv(2) zv(3)]);
+        set(h.zt, 'position', [zv(1) zv(2) zv(3)]);
 	end
 	
 	drawnow
   
 end % of animate()
+
