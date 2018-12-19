@@ -90,7 +90,7 @@ function hout = trplot(T, varargin)
             T = r2t(T);
         end
         set(H, 'Matrix', T);
-        
+
         % for the 3D case retrieve the right hgtransform and set it
         hg2 = get(H, 'UserData');
         if ~isempty(hg2)
@@ -233,23 +233,52 @@ function hout = trplot(T, varargin)
     end
     
     % add the labels to each axis
-    h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
-    set(h, opt.text_opts{:});
+    if isOctave
+		hxt = text(0, 0, 0, sprintf(fmt, 'X'));
+        set(hxt, 'VerticalAlignment', 'middle', ...
+                 'HorizontalAlignment', 'left', opt.text_opts{:});
+		hyt = text(0, 0, 0, sprintf(fmt, 'Y'));
+        set(hyt, 'VerticalAlignment', 'middle', ...
+                 'HorizontalAlignment', 'left', opt.text_opts{:});
+		hzt = text(0, 0, 0, sprintf(fmt, 'Z'));
+        set(hzt, 'VerticalAlignment', 'middle', ...
+                 'HorizontalAlignment', 'left', opt.text_opts{:});
+	    set(hxt, 'position', [x1(1) x1(2) x1(3)]);
+        set(hxt, 'parent', hg);
+	    set(hyt, 'position', [y1(1) y1(2) y1(3)]);
+        set(hyt, 'parent', hg);
+        set(hzt, 'position', [z1(1) z1(2) z1(3)]);
+        set(hzt, 'parent', hg);
+    else
+        h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
+        set(h, opt.text_opts{:});
    
-    h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
-    set(h, opt.text_opts{:});
+        h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
+        set(h, opt.text_opts{:});
 
-    h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
-    set(h, opt.text_opts{:});
-    
-    % label the frame
-    if ~isempty(opt.frame)
-        h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), o(3)-0.04*z1(3), ...
-            ['\{' opt.frame '\}'], 'Parent', hg);
-        set(h, 'VerticalAlignment', 'middle', ...
-            'HorizontalAlignment', 'center', opt.text_opts{:});
+        h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
+        set(h, opt.text_opts{:});
     end
-    
+
+    % label the frame
+    if isOctave
+        if ~isempty(opt.frame)
+            hft = text(0, 0, 0, ['\{' opt.frame '\}']);
+            set(hft, 'VerticalAlignment', 'top', ...
+                'HorizontalAlignment', 'center', opt.text_opts{:});
+            ot = [o(1)-0.04*x1(1); o(2)-0.04*y1(2); o(3)-0.04*z1(3)];
+            set(hft, 'position', [ot(1) ot(2) ot(3)]);
+            set(hft, 'parent', hg);
+        end
+    else
+        if ~isempty(opt.frame)
+            h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), o(3)-0.04*z1(3), ...
+                ['\{' opt.frame '\}'], 'Parent', hg);
+            set(h, 'VerticalAlignment', 'middle', ...
+                'HorizontalAlignment', 'center', opt.text_opts{:});
+        end
+    end
+
     if ~opt.axes
         set(gca, 'visible', 'off');
     end
@@ -330,3 +359,4 @@ function out = ag_color(c)
         out = [1 1 0];        % orange
     end
 end
+
