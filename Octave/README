@@ -12,11 +12,11 @@ for MATLAB respository.
 
 Since the base source code used in the RTB for Python update effort is 10 years
 old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made to
-the scripts identified below may be irrelevant with regard to newer versions of
-RTB. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b Home Edition
-currently available to run RTB for MATLAB, there is a possibility that some
-modifications may be incompatable with older versions of Octave and MATLAB, and
-newer versions of Octave.
+the scripts identified below may be irrelevant with regard to newer versions
+of RTB. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b currently
+available to run RTB for MATLAB, there is a possibility that some modifications
+may be incompatable with older versions of Octave and MATLAB, and newer versions
+of Octave.
 
 It should be understood that there are some functions in MATLAB utilized by RTB
 for MATLAB that are not yet a core functionality in Octave (e.g., hgtransform)
@@ -94,7 +94,7 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
         |
         +- assertEqual.m -- new function to support quaternion and transform tests
         +- crossp.m      -- new function to support transform test
-        +- hgtransform.m -- fix to 2D zd in scripts/plot/util/hgtransform.m from Octave repo master
+        +- hgtransform.m -- text xform added to scripts/plot/util/hgtransform.m from Octave repo master
         +- mat.m         -- modified unit_test/old/mat.m from RTB repo master
 
 
