@@ -1161,7 +1161,7 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
 ### Frame transforms plotting functions.
 ###
 
-def trplot(T, fig=None, **opts):
+def trplot(TorR, fig=None, **opts):
     """
     TRPLOT Draw a coordinate frame
 
@@ -1237,21 +1237,28 @@ def trplot(T, fig=None, **opts):
     if 'title' in opts:
        title = opts['title']
 
-    if isrot(T) or ishomog(T):
-        q = quaternion(T)
-    elif isinstance(T, quaternion):
-        q = T
+    if isrot(TorR):
+        T = r2t(TorR)
+    elif isinstance(TorR, quaternion):
+        T = TorR.tr()
+    elif ishomog(TorR):
+        T = TorR
     else:
         raise ValueError
 
-    x = q * np.mat([1.0, 0.0, 0.0])
-    y = q * np.mat([0.0, 1.0, 0.0])
-    z = q * np.mat([0.0, 0.0, 1.0])
+    o = np.asarray((T * np.mat([0.0, 0.0, 0.0, 1.0]).T).T).ravel()
+    x = np.asarray((T * np.mat([1.0, 0.0, 0.0, 1.0]).T).T).ravel()
+    y = np.asarray((T * np.mat([0.0, 1.0, 0.0, 1.0]).T).T).ravel()
+    z = np.asarray((T * np.mat([0.0, 0.0, 1.0, 1.0]).T).T).ravel()
+
+    print(type(o))
+    print(o.shape)
 
     if (fig is None) or not plt.fignum_exists(fig.number):
         # This will create a new figure unless hold 'on'
         fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
         ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
+        ax.set_aspect("equal")
         # lines in order to be drawn
         line1 = Line3D([], [], [], color='r', ls='-', lw=2.0,  # x-axis
                        marker=' ', mew=1.0, mec='r', mfc='r')
@@ -1260,9 +1267,9 @@ def trplot(T, fig=None, **opts):
         line3 = Line3D([], [], [], color='b', ls='-', lw=2.0,  # z-axis
                        marker=' ', mew=1.0, mec='b', mfc='b')
         # allocate artists for xyz axes labels
-        xaxis_lbl = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
-        yaxis_lbl = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
-        zaxis_lbl = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+        xaxis_lbl = ax.text3D(x[0], x[1], x[2], 'X')
+        yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y')
+        zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z')
         # allocate artist for frame time, but only display if animating
         time_text = ax.text3D(-1.0, -1.0, 1.5, '')
         # set figure subplot title, axis labels and limits
@@ -1283,21 +1290,21 @@ def trplot(T, fig=None, **opts):
         tranim_text3D = [xaxis_lbl, yaxis_lbl, zaxis_lbl, time_text]
         
     # draw orthogonal xyz axes
-    tranim_lines3D[0].set_data([0, x[0, 0]], [0, x[0, 1]])  # x-axis
-    tranim_lines3D[0].set_3d_properties([0, x[0, 2]])
-    tranim_lines3D[1].set_data([0, y[0, 0]], [0, y[0, 1]])  # y-axis
-    tranim_lines3D[1].set_3d_properties([0, y[0, 2]])
-    tranim_lines3D[2].set_data([0, z[0, 0]], [0, z[0, 1]])  # z-axis
-    tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
+    tranim_lines3D[0].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
+    tranim_lines3D[0].set_3d_properties([o[2], x[2]])
+    tranim_lines3D[1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
+    tranim_lines3D[1].set_3d_properties([o[2], y[2]])
+    tranim_lines3D[2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
+    tranim_lines3D[2].set_3d_properties([o[2], z[2]])
     
     # draw orthogonal xyz axes labels
     ax = tranim_text3D[0].axes  # get axes instance the text3d
     if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
-        tranim_text3D[1] = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
-        tranim_text3D[2] = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X')
+        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y')
+        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z')
         
     fig.canvas.draw()
 
@@ -1336,33 +1343,34 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
 
     T = Ttraj[nf]
 
-    if isrot(T) or ishomog(T):
-        q = quaternion(T)
+    if isrot(T):
+        T = r2t(T)
     elif isinstance(T, quaternion):
-        q = T
-    else:
+        T = T.tr()
+    elif not ishomog(T):
         raise ValueError
 
-    x = q * np.mat([1.0, 0.0, 0.0])
-    y = q * np.mat([0.0, 1.0, 0.0])
-    z = q * np.mat([0.0, 0.0, 1.0])
+    o = np.asarray((T * np.mat([0.0, 0.0, 0.0, 1.0]).T).T).ravel()
+    x = np.asarray((T * np.mat([1.0, 0.0, 0.0, 1.0]).T).T).ravel()
+    y = np.asarray((T * np.mat([0.0, 1.0, 0.0, 1.0]).T).T).ravel()
+    z = np.asarray((T * np.mat([0.0, 0.0, 1.0, 1.0]).T).T).ravel()
 
     # draw orthogonal xyz axes
-    tranim_lines3D[0].set_data([0, x[0, 0]], [0, x[0, 1]])  # x-axis
-    tranim_lines3D[0].set_3d_properties([0, x[0, 2]])
-    tranim_lines3D[1].set_data([0, y[0, 0]], [0, y[0, 1]])  # y-axis
-    tranim_lines3D[1].set_3d_properties([0, y[0, 2]])
-    tranim_lines3D[2].set_data([0, z[0, 0]], [0, z[0, 1]])  # z-axis
-    tranim_lines3D[2].set_3d_properties([0, z[0, 2]])
+    tranim_lines3D[0].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
+    tranim_lines3D[0].set_3d_properties([o[2], x[2]])
+    tranim_lines3D[1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
+    tranim_lines3D[1].set_3d_properties([o[2], y[2]])
+    tranim_lines3D[2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
+    tranim_lines3D[2].set_3d_properties([o[2], z[2]])
     
     # draw orthogonal xyz axes labels
     ax = tranim_text3D[0].axes  # get axes instance the text3d
     if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0, 0], x[0, 1], x[0, 2], 'X')
-        tranim_text3D[1] = ax.text3D(y[0, 0], y[0, 1], y[0, 2], 'Y')
-        tranim_text3D[2] = ax.text3D(z[0, 0], z[0, 1], z[0, 2], 'Z')
+        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X')
+        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y')
+        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z')
     # representative frame time
     time_str = 'time = %.3f' % (float(nf)/fps)
     tranim_text3D[3].set_text(time_str)
@@ -1431,7 +1439,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
             # already homogeneous transforms
             T2 = P1
         else:
-            error('tranimate: expected quaternion, rotation or homogeoneos transforms')
+            error('tranimate: expected quaternion, rotation or homogeneous transforms')
         T1 = np.eye(4, 4)
     else:
         if isinstance(P1, quaternion):
@@ -1444,7 +1452,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
             # already a homogeneous transform
             T1 = P1
         else:
-            error('tranimate: expected quaternion, rotation or homogeoneos transforms')
+            error('tranimate: expected quaternion, rotation or homogeneous transforms')
         if isempty(P2):
             T2 = [T1.copy()]
             T1 = np.eye(4, 4)
@@ -1459,7 +1467,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
                 # already a homogeneous transform
                 T2 = [P2]
             else:
-                error('tranimate: expected quaternion, rotation or homogeoneos transforms')
+                error('tranimate: expected quaternion, rotation or homogeneous transforms')
 
     # at this point
     #   T1 is the initial pose
