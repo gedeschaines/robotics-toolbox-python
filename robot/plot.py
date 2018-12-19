@@ -1267,9 +1267,9 @@ def trplot(TorR, fig=None, **opts):
         line3 = Line3D([], [], [], color='b', ls='-', lw=2.0,  # z-axis
                        marker=' ', mew=1.0, mec='b', mfc='b')
         # allocate artists for xyz axes labels
-        xaxis_lbl = ax.text3D(x[0], x[1], x[2], 'X')
-        yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y')
-        zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z')
+        xaxis_lbl = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+        yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+        zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
         # allocate artist for frame time, but only display if animating
         time_text = ax.text3D(-1.0, -1.0, 1.5, '')
         # set figure subplot title, axis labels and limits
@@ -1302,9 +1302,9 @@ def trplot(TorR, fig=None, **opts):
     if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X')
-        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y')
-        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z')
+        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
         
     fig.canvas.draw()
 
@@ -1368,9 +1368,9 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     if ax is not None:          # artists reside in
         for i in range(0,3):
             tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X')
-        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y')
-        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z')
+        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
     # representative frame time
     time_str = 'time = %.3f' % (float(nf)/fps)
     tranim_text3D[3].set_text(time_str)
