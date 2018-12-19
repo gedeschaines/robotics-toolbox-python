@@ -181,6 +181,7 @@ rbplotRbots3D = {}   # dict of 3D robot (name,obj,traj,lines,text) tuples per fi
 rbplotLines3D = {}   # line artists drawn on each active 3D rbplot figure
 rbplotText3D  = {}   # text artists drawn on each active 3D rbplot figure
 
+trplotAnims3D = {}   # dict of instantiated 3D trplot animation objects
 
 def _rbclose2d(event):
     """
@@ -1331,7 +1332,7 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     @see: L{tranimate}
     """
     if nf >= len(Ttraj):
-        return tranim_lines3D
+        return tranim_lines3D + tranim_text3D
 
     T = Ttraj[nf]
 
@@ -1408,7 +1409,9 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
 
     @see: L{disclaimer_rtb}
     """
-    global tranim_lines3D, tranim_text3D
+    global trplotAnims3D   # dict of 3D trplot animators
+    global tranim_lines3D  # line artists drawn for 3D trplots
+    global tranim_text3D   # text artists drawn for 3D trplots
 
     T1 = None
     T2 = None
@@ -1502,6 +1505,13 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
                                    init_func=_trinit3d,
                                    frames=nframes, blit=blit,
                                    interval=fps, repeat=False)
+
+    # Preserve anim object for when this routine exits.
+
+    if fig in trplotAnims3D:
+        trplotAnims3D[fig] = anim
+    else:
+        trplotAnims3D.update({fig: anim})
 
     # Begin
 
