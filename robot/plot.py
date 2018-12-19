@@ -1251,9 +1251,6 @@ def trplot(TorR, fig=None, **opts):
     y = np.asarray((T * np.mat([0.0, 1.0, 0.0, 1.0]).T).T).ravel()
     z = np.asarray((T * np.mat([0.0, 0.0, 1.0, 1.0]).T).T).ravel()
 
-    print(type(o))
-    print(o.shape)
-
     if (fig is None) or not plt.fignum_exists(fig.number):
         # This will create a new figure unless hold 'on'
         fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
