@@ -1,10 +1,10 @@
-## Copyright (C) 2017 Rik Wehbring
+## Copyright (C) 2017-2018 Rik Wehbring
 ##
 ## This file is part of Octave.
 ##
-## Octave is free software; you can redistribute it and/or modify it
+## Octave is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 3 of the License, or
+## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
@@ -14,7 +14,7 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with Octave; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn  {} {@var{h} =} hgtransform ()
@@ -94,16 +94,12 @@ function xform_data (hgt, hlist)
     endif
 
     if (strcmp (type, "text"))
-
-      pos =  double (orig_data(idx).position);
-      xd = [pos(1)];
-      yd = [pos(2)];
-      zd = [pos(3)];
-
+      pos = orig_data(idx).position;
+      xd = pos(1);
+      yd = pos(2);
+      zd = pos(3);
     else
-
       ## FIXME: Rotations for "image" objects are not handled correctly.
-
       xd = double (orig_data(idx).xdata);
       xsz = size (xd);
 
@@ -180,11 +176,11 @@ function children_cb (hgt, ~)
             set (hk, "ydata", orig_data(idx).ydata);
             set (hk, "zdata", orig_data(idx).zdata);
 
-          case {"image"}
+          case "image"
             set (hk, "xdata", orig_data(idx).xdata);
             set (hk, "ydata", orig_data(idx).ydata);
 
-          case {"text"}
+          case "text"
             set (hk, "position", orig_data(idx).position);
 
           otherwise
@@ -212,17 +208,17 @@ function children_cb (hgt, ~)
         orig_data(end).ydata = get (hk, "ydata");
         orig_data(end).zdata = get (hk, "zdata");
 
-      case {"image"}
+      case "image"
         orig_data(end).xdata = get (hk, "xdata");
         orig_data(end).ydata = get (hk, "ydata");
 
-      case {"text"}
+      case "text"
         orig_data(end).position = get (hk, "position");
 
-      case {"light"}
+      case "light"
         warning ("hgtransform: %s objects are not yet supported", type);
 
-      case {"hggroup"}
+      case "hggroup"
         try
           get (hk, "curvature");
           is_rectangle = true;
