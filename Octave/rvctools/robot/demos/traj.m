@@ -19,7 +19,7 @@
 
 %%begin
 
-warning ("off", 'Octave:possible-matlab-short-circuit-operator');
+%%warning ("off", 'Octave:possible-matlab-short-circuit-operator');
 
 % Frequently we want to define a smooth sequence of positions (or poses) from
 % one point to another.  First consider the 1-dimensional case.
@@ -92,5 +92,5 @@ T(:,:,10)
 % We can plot the motion of this coordinate frame by
 
 clf;
-tranimate(T);
+tranimate(T,'movie',"./images", 'thick', 1.0);
 pause

@@ -33,8 +33,11 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
   + ./common
   |  |
   |  +- about.m       -- change occurances of deprecated isstr() to ischar()
+  |  +- getimage.m    -- new script to get figure image from an image file
+  |  +- image2avi.m   -- new script to convert saved image files to an avi movie
   |  +- isOctave.m    -- added to wrap Octave and MATLAB code statements
   |  +- plot2.m       -- use isOctave to handle trplot and trplot2 hgtransform
+  |  +- putimage.m    -- new script to put figure image into an image file
   |  +- tb_optparse.m -- change occurances of deprecated isstr() to ischar()
   |
   +-./robot
@@ -46,6 +49,7 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
      +- mdl_puma560akb.m -- cosmetic changes, added robot specific named q vectors
      +- mdl_puma560std.m -- same as mdl_puma560.m but creates robot named 'p560s'
      +- mdl_stanford.m   -- cosmetic changes to RTB v9.8 version
+     +- tranimate.m      -- modified to play/save frame transform animation movies.
      +- trplot.m         -- use isOctave to handle Octave/MATLAB hgtransform of 3D lines
      +- trplot2.m        -- use isOctave to handle Octave/MATLAB hgtransform of 2D lines
      |
@@ -74,7 +78,7 @@ List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts
      |  +- ikine.m    -- fixed use of 'nopinv' case since opt.pinv=True by default
      |  +- jacob.m    -- changed calls to maniplty to match RTB for Python
      |  +- README.txt -- instruction to use runscript function to execute demo scripts
-     |  +- traj.m     -- turned off Octave:possible-matlab-short-circuit-operator
+     |  +- traj.m     -- specified tranimate movie and line thickness options
      |
      +-./tests -- Scripts tailored to use in comparsions with RTB for Python tests
      |  |

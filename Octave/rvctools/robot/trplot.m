@@ -171,9 +171,11 @@ function hout = trplot(T, varargin)
                 xlabel( 'X');
                 ylabel( 'Y');
                 zlabel( 'Z');
+                view(3);
                 rotate3d on
             end
             new_plot = true;
+            set(gcf(), 'position', [120 100 580 480]);
         end
         hax = gca;
         hold on
