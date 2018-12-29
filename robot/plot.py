@@ -31,6 +31,7 @@
 
 import sys
 import os
+import subprocess
 import time
 from math import ceil
 
@@ -181,7 +182,7 @@ rbplotRbots3D = {}   # dict of 3D robot (name,obj,traj,lines,text) tuples per fi
 rbplotLines3D = {}   # line artists drawn on each active 3D rbplot figure
 rbplotText3D  = {}   # text artists drawn on each active 3D rbplot figure
 
-trplotAnims3D = {}   # dict of instantiated 3D trplot animation objects
+ShowFFPLAYerrs = False  # set true to show ffplay args, stdout and stderr
 
 def _rbclose2d(event):
     """
@@ -826,7 +827,7 @@ def _rbplot_add_artists3d(ax, robot):
     return lines, text
 
 
-def rbplot(robot, Q, phold=False, rec=0, **opts):
+def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
     """
     Display animated 2D or 3D plots of robot manipulator link chain.
 
@@ -838,6 +839,8 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
     @param phold: plot on current figure
     @type rec: int
     @param rec: record animation if not 0
+    @type movie: string
+    @param movie: filepath to recorded animation movie file
     @type opts: **kwargs
     @param opts: optional plotting parameters
 
@@ -856,6 +859,8 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
     global rbplotResize3D  # dict of 3D rbplot resize handlers
     global rbanimLines3D   # line artists drawn for 3D plots of Q trajectories
     global rbanimText3D    # text artists drawn for 3D plots of Q trajectories
+
+    global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
 
     if Q is None:
         # no trajectory, use robot's current joint configuration
@@ -1143,9 +1148,11 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
         writer = Writer(fps=fps, codec='libx264',
                         metadata=dict(artist='RTB -- rbplot'),
                         bitrate=-1)
-        filename = robot.name.replace(' ','_') + '.mp4'
-        anim.save(filename, writer=writer)
-        print("Animation saved in file %s" % filename)
+        if movie != '.' and not os.path.exists(movie):
+            os.makedirs(movie)
+        filepath = movie + '/' + robot.name.replace(' ','_') + '.mp4'
+        anim.save(filepath, writer=writer)
+        print("Animation saved in file %s" % filepath)
         if plt_ion: plt.ion()
     
     if __name__ == '__main__' and not plot_isinteractive:
@@ -1155,11 +1162,29 @@ def rbplot(robot, Q, phold=False, rec=0, **opts):
 
     robot.q = Q[-1]  # save last pose in joint coordinates
     
-    return
+    if not (rec == 0 or Writer is None):
+        # start a subprocess for ffplay display of animation movie file
+        if os.path.exists(filepath) and os.path.exists("/usr/bin/ffplay"):
+            from subprocess import Popen
+            print("ffplay: use '<-' arrow key to replay, 'P' key to")
+            print("        pause/resume, 'S' key to single step and")
+            print("        'Q' or 'ESC' key to quit.")
+            pargs = ['/usr/bin/ffplay', '-hide_banner', '-loop', '1']
+            pargs = pargs + ['-window_title', "ffplay: "+filepath, filepath]
+            if ShowFFPLAYers:
+                print(pargs)
+                p = Popen(pargs)
+            else:
+                p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
 
 ###
 ### Frame transforms plotting functions.
 ###
+
+trplotAnims3D = {}   # dict of instantiated 3D trplot animation objects
+tranim_lines3D = {}  # line artists drawn for 3D trplots
+tranim_text3D = {}   # text artists drawn for 3D trplots
 
 def trplot(TorR, fig=None, **opts):
     """
@@ -1255,7 +1280,18 @@ def trplot(TorR, fig=None, **opts):
         # This will create a new figure unless hold 'on'
         fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
         ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
+        # match MATLAB/Octave trplot() aspect and view defaults
         ax.set_aspect("equal")
+        ax.view_init(30.0, -127.5)
+        # get the origin of the frame
+        c = np.asarray(transl(T).T).ravel()
+        # set axis limits and time text location
+        d = 1.5
+        ax.set_xlim3d([c[0]-d, c[0]+d])
+        ax.set_ylim3d([c[1]-d, c[1]+d])
+        ax.set_zlim3d([c[2]-d, c[2]+d])
+        # show grid
+        ax.grid()
         # lines in order to be drawn
         line1 = Line3D([], [], [], color='r', ls='-', lw=2.0,  # x-axis
                        marker=' ', mew=1.0, mec='r', mfc='r')
@@ -1268,17 +1304,13 @@ def trplot(TorR, fig=None, **opts):
         yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
         zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
         # allocate artist for frame time, but only display if animating
-        time_text = ax.text3D(-1.0, -1.0, 1.5, '')
+        d = d*1.2
+        time_text = ax.text3D(c[0]-d, c[1]+d, c[2]+d, '', ha='center', va='bottom')
         # set figure subplot title, axis labels and limits
         ax.set_title(title)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        ax.set_xlim3d([-1.0, 1.0])
-        ax.set_ylim3d([-1.0, 1.0])
-        ax.set_zlim3d([-1.0, 1.0])
-        # ax.set_aspect('equal')
-        ax.grid()
         # store allocated artists in global arrays 
         ax.add_line(line1)
         ax.add_line(line2)
@@ -1375,7 +1407,7 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     return tranim_lines3D + tranim_text3D
 
 
-def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
+def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
     """
     TRANIMATE Animate a coordinate frame
 
@@ -1394,15 +1426,17 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
       - Quaternion vector (Nx1)
 
     Options::
-     'fps', fps    Number of frames per second to display (default 10)
      'nsteps', n   The number of steps along the path (default 50)
+     'fps', fps    Number of frames per second to display (default 10)
      'rec', 0|1    Record animation in a video file (default 0=No)
+     'movie', M    filepath M to recorded animation movie file (default '.')
      'axis', A     Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
-     'movie', M    Save frames as a movie in filepath M
+
 
     Notes::
       - The 'rec' option saves animation frames to mpeg video file if
         a video writer, such as ffmpeg or rvconv, is available.
+      ### THE FOLLOWING IS NOT CURRENTLY IMPLEMENTED ###
       - The 'movie' options saves frames as files NNNN.png.
       - When using 'movie' option ensure that the window is fully visible.
       - To convert frames to a movie use a command like:
@@ -1417,6 +1451,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
     global trplotAnims3D   # dict of 3D trplot animators
     global tranim_lines3D  # line artists drawn for 3D trplots
     global tranim_text3D   # text artists drawn for 3D trplots
+
+    global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
 
     T1 = None
     T2 = None
@@ -1528,15 +1564,33 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, **opts):
                         extra_args=['-an'],
                         metadata=dict(artist='RTB -- tranimate'),
                         bitrate=-1)
-        filename = 'tranimate' + '.mp4'
-        anim.save(filename, writer=writer)
-        print("Animation saved in file %s" % filename)
+        if movie != '.' and not os.path.exists(movie):
+            os.makedirs(movie)
+        filepath = movie + '/' + 'tranimate' + '.mp4'
+        anim.save(filepath, writer=writer)
+        print("Animation saved in file %s" % filepath)
         if plt_ion: plt.ion()
 
     if __name__ == '__main__' and not plot_isinteractive:
         plt.show(block=True)
     else:
         plt.show(block=False)
+
+    if not (rec == 0 or Writer is None):
+        # start a subprocess for ffplay display of animation movie file
+        if os.path.exists(filepath) and os.path.exists("/usr/bin/ffplay"):
+            from subprocess import Popen
+            print("ffplay: use '<-' arrow key to replay, 'P' key to")
+            print("        pause/resume, 'S' key to single step and")
+            print("        'Q' or 'ESC' key to quit.")
+            pargs = ['/usr/bin/ffplay', '-hide_banner', '-loop', '1']
+            pargs = pargs + ['-window_title', "ffplay: "+filepath, filepath]
+            if ShowFFPLAYerrs:
+                print(pargs)
+                p = Popen(pargs)
+            else:
+                p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
 
 ###
 ### Main for quick functional checks
@@ -1569,7 +1623,7 @@ if __name__ == '__main__':
     
     # check tranimation recording
     print("Checking tranimate recording.")
-    tranimate(rotx(0.5), None, nsteps=20, rec=1, title='tranimate recording')
+    tranimate(rotx(0.5), None, nsteps=20, rec=1, movie="./imgs", title='tranimate recording')
     print("Done.")
     print("Interactive = %s" % plot_isinteractive)
 
@@ -1621,7 +1675,7 @@ if __name__ == '__main__':
 
     # check rbplot animation recording
     print("Checking rbplot recording.")
-    rbplot(p560, Q, rec=1)
+    rbplot(p560, Q, rec=1, movie="./imgs")
     print("Done.")
     print("Interactive = %s" % plot_isinteractive)
 

@@ -141,8 +141,8 @@ pause % press any key to continue
 # We can plot the motion of this coordinate frame by
 
     close()
-    tranimate(T, None)
-pause %p ress any key to continue
+    tranimate(T, None, rec=1, movie="./images")
+pause % press any key to continue
 '''
 
     p.parsedemo(s)
