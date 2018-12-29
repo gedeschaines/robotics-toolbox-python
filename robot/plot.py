@@ -104,6 +104,30 @@ def disclaimer_ged():
     pass
 
 
+ShowFFPLAYerrs = False  # set true to show ffplay args, stdout and stderr
+
+def playmovie(filepath):
+    """ Start a subprocess for ffplay display of animation movie file
+    :param filepath: string
+    :return: None
+    """
+    global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
+
+    if os.path.exists(filepath) and os.path.exists("/usr/bin/ffplay"):
+        from subprocess import Popen
+        print("ffplay: use '<-' arrow key to replay, 'P' key to")
+        print("        pause/resume, 'S' key to single step and")
+        print("        'Q' or 'ESC' key to quit.")
+        pargs = ['/usr/bin/ffplay', '-hide_banner', '-loop', '1']
+        pargs = pargs + ['-window_title', "ffplay: " + filepath, filepath]
+        if ShowFFPLAYerrs:
+            print(pargs)
+            p = Popen(pargs)
+        else:
+            p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p.poll()
+
+
 def qplot(t, *args, **opts):
     """
     QPLOT Plot joint angles
@@ -181,8 +205,6 @@ rbplotResize3D = {}  # dict of instantiated 3D rbplot resize handlers
 rbplotRbots3D = {}   # dict of 3D robot (name,obj,traj,lines,text) tuples per figure
 rbplotLines3D = {}   # line artists drawn on each active 3D rbplot figure
 rbplotText3D  = {}   # text artists drawn on each active 3D rbplot figure
-
-ShowFFPLAYerrs = False  # set true to show ffplay args, stdout and stderr
 
 def _rbclose2d(event):
     """
@@ -860,8 +882,6 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
     global rbanimLines3D   # line artists drawn for 3D plots of Q trajectories
     global rbanimText3D    # text artists drawn for 3D plots of Q trajectories
 
-    global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
-
     if Q is None:
         # no trajectory, use robot's current joint configuration
         Q = mat(robot.q)
@@ -1163,19 +1183,8 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
     robot.q = Q[-1]  # save last pose in joint coordinates
     
     if not (rec == 0 or Writer is None):
-        # start a subprocess for ffplay display of animation movie file
-        if os.path.exists(filepath) and os.path.exists("/usr/bin/ffplay"):
-            from subprocess import Popen
-            print("ffplay: use '<-' arrow key to replay, 'P' key to")
-            print("        pause/resume, 'S' key to single step and")
-            print("        'Q' or 'ESC' key to quit.")
-            pargs = ['/usr/bin/ffplay', '-hide_banner', '-loop', '1']
-            pargs = pargs + ['-window_title', "ffplay: "+filepath, filepath]
-            if ShowFFPLAYers:
-                print(pargs)
-                p = Popen(pargs)
-            else:
-                p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # invoke video player to display animation movie file
+        playmovie(filepath)
 
 
 ###
@@ -1452,8 +1461,6 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
     global tranim_lines3D  # line artists drawn for 3D trplots
     global tranim_text3D   # text artists drawn for 3D trplots
 
-    global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
-
     T1 = None
     T2 = None
     if isinstance(P1, list) and len(P1) > 0:
@@ -1577,19 +1584,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
         plt.show(block=False)
 
     if not (rec == 0 or Writer is None):
-        # start a subprocess for ffplay display of animation movie file
-        if os.path.exists(filepath) and os.path.exists("/usr/bin/ffplay"):
-            from subprocess import Popen
-            print("ffplay: use '<-' arrow key to replay, 'P' key to")
-            print("        pause/resume, 'S' key to single step and")
-            print("        'Q' or 'ESC' key to quit.")
-            pargs = ['/usr/bin/ffplay', '-hide_banner', '-loop', '1']
-            pargs = pargs + ['-window_title', "ffplay: "+filepath, filepath]
-            if ShowFFPLAYerrs:
-                print(pargs)
-                p = Popen(pargs)
-            else:
-                p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # invoke video player to display animation movie file
+        playmovie(filepath)
 
 
 ###
