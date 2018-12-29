@@ -147,7 +147,7 @@ function hout = trplot(T, varargin)
             c = transl(T);    
         end
         
-        d = 1.2;
+        d = 1.5;
         opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d c(3)-d c(3)+d];
         
     end
@@ -168,9 +168,9 @@ function hout = trplot(T, varargin)
             daspect([1 1 1]);
             
             if opt.axes
-                xlabel( 'X');
-                ylabel( 'Y');
-                zlabel( 'Z');
+                xlabel('X');
+                ylabel('Y');
+                zlabel('Z');
                 view(3);
                 rotate3d on
             end
