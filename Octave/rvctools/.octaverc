@@ -4,6 +4,7 @@
 ## time Octave starts for this user at this site.
 
 warning ("off", 'Octave:shadowed-function');
+warning ("off", 'Octave:possible-matlab-short-circuit-operator');
 
 rvcpath = fileparts(mfilename('fullpath'));
 octave_rvct = getenv('OCTAVE_RVCT');
@@ -28,7 +29,7 @@ end
 if exist(robotpath, 'dir') && exist(utilspath, 'dir')
     % So demos and tests can locate utility functions.
     addpath(utilspath, 0);
-    % So demos and tests can locate robot models and modidied
+    % So demos and tests can locate robot models and modified
     % trplot and trplot2 functions override those originally
     % installed
     addpath(robotpath, 0);
