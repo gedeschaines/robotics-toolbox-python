@@ -92,5 +92,6 @@ T(:,:,10)
 % We can plot the motion of this coordinate frame by
 
 clf;
-tranimate(T,'movie',"./images", 'thick', 1.0);
+axlims = [-1.5 1.5 -1.5 1.5 -1.5 1.5];
+tranimate(T,'movie',"./images", 'thick', 1.0, 'axis', axlims);
 pause
