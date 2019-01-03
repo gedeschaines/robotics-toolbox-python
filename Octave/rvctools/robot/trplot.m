@@ -164,6 +164,9 @@ function hout = trplot(T, varargin)
             cla
             if ~isempty(opt.axis)
                 axis(opt.axis);
+                set(gca, 'xtick', [opt.axis(1):(opt.axis(2)-opt.axis(1))/6:opt.axis(2)]);
+                set(gca, 'ytick', [opt.axis(3):(opt.axis(4)-opt.axis(3))/6:opt.axis(4)]);
+                set(gca, 'ztick', [opt.axis(5):(opt.axis(6)-opt.axis(5))/6:opt.axis(6)]);
             end
             daspect([1 1 1]);
             
