@@ -1,21 +1,28 @@
+# Robotics Toolbox for Python
 # Copyright (C) 1993-2013, by Peter I. Corke
 #
 # This file is part of The Robotics Toolbox for MATLAB (RTB).
 # 
-# RTB is free software: you can redistribute it and/or modify it under 
-# the terms of the GNU Lesser General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# RTB is free software: you can redistribute it and/or modify 
+# it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation, either version
+# 3 of the License, or (at your option) any later version.
 # 
-# RTB is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+# RTB is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU Lesser General Public License for more details.
 # 
-# You should have received a copy of the GNU Lesser General Public
-# License along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU Lesser General
+# Public License along with RTB. If not, copies may be viewed
+# and downloaded at <https://www.gnu.org/licenses/>.
 #
 # http://www.petercorke.com
+
+# This file is an enhanced form of the RTB for Python script 
+# file robotics-toolbox-python/demo/trajectory.py to provide 
+# the instructional elements of the RTB for MATLAB v9.8 
+# rvctools/robot/demos/traj.m script.
 
 import _robot
 from robot import parsedemo as p
@@ -24,8 +31,8 @@ import sys
 if __name__ == '__main__':
 
     s = '''
-# Frequently we want to define a smooth sequence of positions (or poses) from
-# one point to another. First consider the 1-dimensional case.
+# Frequently we want to define a smooth sequence of positions (or poses)
+# from one point to another. First consider the 1-dimensional case.
 #
 # We define the start and end position
 
@@ -140,8 +147,9 @@ pause % press any key to continue
 
 # We can plot the motion of this coordinate frame by
 
-    close()
-    tranimate(T, None, rec=1, movie="./images")
+    close();
+    axlims = [-1.5, 1.5, -1.5, 1.5, -1.5, 1.5];
+    tranimate(T, None, rec=1, movie="./images", axis=axlims);
 pause % press any key to continue
 '''
 
