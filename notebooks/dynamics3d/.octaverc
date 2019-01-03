@@ -4,16 +4,19 @@
 ## time Octave starts for this user at this site.
 
 warning ("off", 'Octave:shadowed-function');
+warning ("off", 'Octave:possible-matlab-short-circuit-operator');
 
 rvcpath = fileparts(mfilename('fullpath'));
 octave_rvct = getenv('OCTAVE_RVCT');
 
 if length(octave_rvct) > 0
     % Use OCTAVE_RVCT environment variable to assemble search paths.
+    commonpath = strjoin({octave_rvct, 'common'}, '/');
     robotpath = strjoin({octave_rvct, 'robot'}, '/');
     utilspath = strjoin({robotpath, 'utils'}, '/');
 else
     % Use present working directory to assemble search paths
+    commonpath = fullfile(rvcpath, '../../Octave/rvctools/common');
     robotpath = fullfile(rvcpath, '../../Octave/rvctools/robot');
     utilspath = fullfile(robotpath, 'utils');
 end
@@ -26,4 +29,4 @@ if exist(robotpath, 'dir') && exist(utilspath, 'dir')
     addpath(robotpath, 0);
 end
 
-clear -v rvcpath octave_rvct robotpath utilspath
+clear -v rvcpath octave_rvct commonpath robotpath utilspath
