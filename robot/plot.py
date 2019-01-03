@@ -109,7 +109,7 @@ ShowFFPLAYerrs = False  # set true to show ffplay args, stdout and stderr
 def playmovie(filepath):
     """ Start a subprocess for ffplay display of animation movie file
     :param filepath: string
-    :return: None
+    :return: None or subprocess Popen object
     """
     global ShowFFPLAYerrs  # set true to show ffplay args, stdout and stderr
 
@@ -125,7 +125,9 @@ def playmovie(filepath):
             p = Popen(pargs)
         else:
             p = Popen(pargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        p.poll()
+        return p
+    else:
+        return None
 
 
 def qplot(t, *args, **opts):
@@ -153,7 +155,7 @@ def qplot(t, *args, **opts):
 
     @see: L{disclaimer_rtb}
     """
-    title = 'qplot'
+    opt_title = 'qplot'
 
     if args is None or len(args) < 1:
         q = t
@@ -167,7 +169,7 @@ def qplot(t, *args, **opts):
         q = np.mat(q).flatten()
 
     if 'title' in opts:
-        title = opts['title']
+        opt_title = opts['title']
 
     plt.clf()
     plt.plot(t[:], q[:,0], label='q1')
@@ -181,7 +183,7 @@ def qplot(t, *args, **opts):
     plt.xlabel('time')
     plt.ylabel('q')
     plt.legend()
-    plt.title(title)
+    plt.title(opt_title)
 
     if __name__ == '__main__' and not plot_isinteractive:
         plt.show(block=True)
@@ -980,9 +982,9 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
         # Specify plotting objects and parameters.
 
         if 'title' in opts:
-            title = opts['title']
+            opt_title = opts['title']
         else:
-            title = robot.name
+            opt_title = robot.name
 
         xlims = robot.get_plotopt('xlim')
         ylims = robot.get_plotopt('ylim')
@@ -991,7 +993,7 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
         if Plot3D == 0:
             # create axes for drawing 2D artists
             ax = fig.add_subplot(111, autoscale_on=False)  # returns AxesSubplot
-            ax.set_title(title)
+            ax.set_title(opt_title)
             ax.set_xlabel('X')
             ax.set_ylabel('Y')
             ax.set_xlim(xlims)
@@ -1019,7 +1021,7 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
         else:
             # create axes for drawing 3D artists
             ax = fig.add_subplot(111, projection='3d')  # returns Axes3DSubplot
-            ax.set_title(title)
+            ax.set_title(opt_title)
             ax.set_xlabel('X')
             ax.set_ylabel('Y')
             ax.set_zlabel('Z')
@@ -1123,14 +1125,14 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
         pass          # when animation init_func erases lines and text.
 
     if Plot3D == 0:
-        _rbinit2d()
+        _rbinit2d()  # reset animation due to 2D animation interval timing test
         anim = animation.FuncAnimation(fig, _mrbanim2d,
                                        fargs=(fign,),
                                        init_func=_rbinit2d,
                                        frames=nframes, blit=blit,
                                        interval=interval, repeat=False)
     else:
-        _rbinit3d()
+        _rbinit3d()  # reset animation due to 3D animation interval timing test
         anim = animation.FuncAnimation(fig, _mrbanim3d,
                                        fargs=(fign,),
                                        init_func=_rbinit3d,
@@ -1192,6 +1194,7 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
 ###
 
 trplotAnims3D = {}   # dict of instantiated 3D trplot animation objects
+trplotClose3D = {}   # dict of 3D trplot close handlers
 tranim_lines3D = {}  # line artists drawn for 3D trplots
 tranim_text3D = {}   # text artists drawn for 3D trplots
 
@@ -1217,10 +1220,10 @@ def trplot(TorR, fig=None, **opts):
 
     Options::
     'title',text       The figure title
+    'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
     ### THE FOLLOWING Options ARE NOT CURRENTLY IMPLEMENTED ###
     'color',C          The color to draw the axes, MATLAB colorspec C
     'noaxes'           Don't display axes on the plot
-    'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
     'frame',F          The frame is named {F} and the subscript on the axis labels is F.
     'text_opts',opt    A cell array of MATLAB text properties
     'handle',H         Draw in the MATLAB axes specified by the axis handle H
@@ -1267,9 +1270,13 @@ def trplot(TorR, fig=None, **opts):
     global tranim_lines3D  # line artists drawn for 3D plots of frame transforms
     global tranim_text3D   # text artists drawn for 3D plots of frame transforms
 
-    title = ""
+    opt_title = ""
     if 'title' in opts:
-       title = opts['title']
+       opt_title = opts['title']
+
+    opt_axis = []
+    if 'axis' in opts:
+       opt_axis = opts['axis']
 
     if isrot(TorR):
         T = r2t(TorR)
@@ -1294,11 +1301,13 @@ def trplot(TorR, fig=None, **opts):
         ax.view_init(30.0, -127.5)
         # get the origin of the frame
         c = np.asarray(transl(T).T).ravel()
-        # set axis limits and time text location
-        d = 1.5
-        ax.set_xlim3d([c[0]-d, c[0]+d])
-        ax.set_ylim3d([c[1]-d, c[1]+d])
-        ax.set_zlim3d([c[2]-d, c[2]+d])
+        # set axis limits
+        if isempty(opt_axis):
+            d = 1.5
+            opt_axis = [c[0]-d, c[0]+d, c[1]-d, c[1]+d, c[2]-d, c[2]+d]
+        ax.set_xlim3d([opt_axis[0], opt_axis[1]])
+        ax.set_ylim3d([opt_axis[2], opt_axis[3]])
+        ax.set_zlim3d([opt_axis[4], opt_axis[5]])
         # show grid
         ax.grid()
         # lines in order to be drawn
@@ -1313,10 +1322,12 @@ def trplot(TorR, fig=None, **opts):
         yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
         zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
         # allocate artist for frame time, but only display if animating
-        d = d*1.2
-        time_text = ax.text3D(c[0]-d, c[1]+d, c[2]+d, '', ha='center', va='bottom')
+        tx = opt_axis[0]*1.2
+        ty = opt_axis[3]*1.2
+        tz = opt_axis[5]*1.2
+        time_text = ax.text3D(tx, ty, tz, '', ha='center', va='bottom')
         # set figure subplot title, axis labels and limits
-        ax.set_title(title)
+        ax.set_title(opt_title)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
@@ -1365,6 +1376,66 @@ def _trinit3d():
     return tranim_lines3D + tranim_text3D
 
 
+tranim_kreplay = 0  # _tranim_replay() call counter
+
+def _tranim_replay(fig):
+    """
+    tranimate - replay frame transform animation for given figure.
+
+    NOTE: The Matplotlib Tk backend's keypress and mouse button handlers 
+          will respond to keyboard and mouse events for the given figure
+          independent of the figure's ginput method. For example, a left
+          mouse button press while the cursor is within the figure's axes 
+          area will save the data coordinates at the cursor's location,
+          begin replay of the animation and initiate view tilt/rotate.
+           
+    @type fig: Matplotlib figure object
+    @param fig: figure instantiated and returned by trplot()
+    @rtype fig: Matplotlib figure object
+    @return fig: None or animation's figure object 
+    """
+    global trplotAnims3D   # dict of instantiated 3D trplot animation objects
+    global tranim_kreplay   
+
+    if fig is None:
+        return None
+
+    fign = fig.number
+    if not plt.fignum_exists(fign):
+        return None
+
+    if fign not in trplotAnims3D:
+        return None
+
+    if tranim_kreplay == 0 :
+        print("\nFigure %d: press '<-' key or left mouse button" % fign)
+        print("          to replay, middle button to continue.")
+        print("          Only close this figure after continuing.")
+        tranim_kreplay = 1
+    elif tranim_kreplay > 0:
+        done = False
+        while not done and (fig is not None):
+            mouseXY = fig.ginput(n=1,timeout=10,show_clicks=False,
+                                 mouse_add=1,mouse_pop=3,mouse_stop=2)
+            if (len(mouseXY) > 0) and (fig is not None):
+                fign = fig.number
+                if plt.fignum_exists(fign) and (fign in trplotAnims3D):
+                    anim = trplotAnims3D[fign]
+                    if anim is not None:
+                        anim.frame_seq = anim.new_saved_frame_seq()
+                        if anim.event_source is not None:
+                            anim.event_source.start()
+                            tranim_kreplay = tranim_kreplay + 1
+                            continue
+                tranim_kreplay = -1
+                done = True
+            else:
+                tranim_kreplay = -1
+                done = True
+    
+    return fig
+        
+
 def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     """
     Callback function for 3D animation of frame transforms.
@@ -1377,6 +1448,9 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     @see: L{tranimate}
     """
     if nf >= len(Ttraj):
+        fig = _tranim_replay(plt.gcf())
+        if fig is None:
+           return []
         return tranim_lines3D + tranim_text3D
 
     T = Ttraj[nf]
@@ -1414,6 +1488,41 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     tranim_text3D[3].set_text(time_str)
     
     return tranim_lines3D + tranim_text3D
+
+
+tranim_mbutton = 0  # button value saved by tranimate mouse button handler
+
+def _tranim_onclick(event):
+    """
+    tranimate - mouse button pressed handler (Not currently used)
+    """
+    global tranim_mbutton
+
+    b = event.button
+    x = event.xdata
+    y = event.ydata
+    tranim_mbutton = b
+
+
+def _trclose3d(event):
+    """
+    Close event handler for 3D frame transform plotting to remove
+    animator and close handler from global dictionaries
+    :param event:
+    :return: None
+    """
+    global trplotAnims3D  # dict of instantiated 3D trplot animation objects
+    global trplotClose3D  # dict of 3D trplot animation close handlers
+
+    fig = event.canvas.figure
+    if fig is not None:
+        fign = fig.number
+        if plt.fignum_exists(fign):
+            if fign in trplotAnims3D:
+                trplotAnims3D.pop(fign)
+            if fign in trplotClose3D:
+                event.canvas.mpl_disconnect(trplotClose3D[fign])
+                trplotClose3D.pop(fign)
 
 
 def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
@@ -1457,7 +1566,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
 
     @see: L{disclaimer_rtb}
     """
-    global trplotAnims3D   # dict of 3D trplot animators
+    global trplotAnims3D   # dict of instantiated 3D trplot animators
+    global trplotClose3D   # dict of 3D trplot animation close handlers
     global tranim_lines3D  # line artists drawn for 3D trplots
     global tranim_text3D   # text artists drawn for 3D trplots
 
@@ -1525,7 +1635,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
         # create a path between them
         Ttraj = ctraj(T1, T2[0], nsteps)
 
-    fig = trplot(eye(4, 4), fig=None, **opts)  # create a frame at the origin
+    fig  = trplot(eye(4, 4), fig=None, **opts)  # create a frame at the origin
+    fign = fig.number
 
     # If recording, assign an animation writer
 
@@ -1541,25 +1652,53 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
                 print("Try installing ffmpeg or avconv.")
                 rec = 0
 
+    # Determine animation interval time. This is a hold over from the 
+    # IK_Solver application where the inverse kinematic iterative solver
+    # was called from frame to frame
+
+    tdel      = 1.0/fps
+    tdel_msec = 1000.0*tdel
+    tmsec0    = 1000.0*time.clock()
+    _tranim3d(0, Ttraj, fps, tranim_lines3D, tranim_text3D)
+    tmsec1    = 1000.0*time.clock()
+    tstep     = tmsec1 - tmsec0
+    #interval  = ceil(tmsec1-tmsec0)  # allows faster than real-time
+    interval  = tdel_msec - tstep     # approximates real-time
+    """
+    print("tdel_msec = %8.3f" % tdel_msec)
+    print("t1 - t0   = %8.3f" % tstep)
+    print("interval  = %8.3f" % interval)
+    """
+
+    # Assign figure close event handler.
+
+    cid = fig.canvas.mpl_connect('close_event', _trclose3d)
+    if fign in trplotClose3D:
+        fig.canvas.mpl_disconnect(trplotClose3D[fign])
+        trplotClose3D[fign] = cid
+    else:
+        trplotClose3D.update({fign: cid})
+
     # Specify animation parameters and assign functions.
 
-    nframes=nsteps
+    nframes = nsteps + 1  # add 1 for animation replay mode signal.
     blit = False
     if rec == 0:
         #blit = True  # blit results in image loss after resize for Matplotlib v1.5.1+
         pass          # when animation init_func erases lines and text.
 
+    _trinit3d()  # reset 3D animation due to animation interval timing test
     anim = animation.FuncAnimation(fig, _tranim3d, fargs=(Ttraj, fps, tranim_lines3D, tranim_text3D),
                                    init_func=_trinit3d,
                                    frames=nframes, blit=blit,
-                                   interval=fps, repeat=False)
+                                   interval=interval, repeat=False)
 
     # Preserve anim object for when this routine exits.
 
-    if fig in trplotAnims3D:
-        trplotAnims3D[fig] = anim
+    if fign in trplotAnims3D:
+        trplotAnims3D[fign] = anim
     else:
-        trplotAnims3D.update({fig: anim})
+        trplotAnims3D.update({fign: anim})
 
     # Begin
 
@@ -1585,7 +1724,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
 
     if not (rec == 0 or Writer is None):
         # invoke video player to display animation movie file
-        playmovie(filepath)
+        # spid = playmovie(filepath)
+        pass
 
 
 ###
