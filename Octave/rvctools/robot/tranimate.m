@@ -189,10 +189,10 @@ function tranimate(P2, varargin)
             if isOctave
                 for k = 1:length(F)
                     img = getimage(F(k,1:end));
-                    image([0 fig1pos(3)], [0 fig1pos(4)], img, 'clipping', "on");
                     figMpos = get(figM, 'position');
-                    set(figM, 'position', [figMpos(1) figMpos(2) fig1opos(3)*sfac fig1opos(4)]);
+                    image([0 fig1pos(3)], [0 fig1pos(4)], img, 'clipping', "on");
                     axis("off");
+                    set(figM, 'position', [figMpos(1) figMpos(2) fig1opos(3)*sfac fig1opos(4)]);
                     pause(1.0/opt.fps);
                 end
             else
