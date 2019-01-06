@@ -1,28 +1,31 @@
-----------------------------------------------------------------------------------
-Robotics Toolbox for MATLAB Octave Scripts supporting RTB for Python Update Effort
-----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Robotics Toolbox for MATLAB Octave scripts supporting RTB for Python - Update 1
+-------------------------------------------------------------------------------
 
 Ideally these updated versions of several Octave and MATLAB scripts should be
 introduced in Peter Corke's Robotics Toolbox for MATLAB (RTB) source respository
-at https://github.com/petercorke/robotics-toolbox-matlab.  However, as these
-modified scripts were directly related to the Robotics Toolbox for Python update
-effort, it seemed appropriate to provide them here before formally submitting
-them for review as possible candidates for inclusion into the Robotics Toolbox
-for MATLAB respository.
+at https://github.com/petercorke/robotics-toolbox-matlab. However, as these
+modified scripts were directly related to the Robotics Toolbox for Python -
+Update 1 effort, it seemed appropriate to provide them here before formally
+submitting them for review as possible candidates for inclusion into the Robotics
+Toolbox for MATLAB respository.
 
-Since the base source code used in the RTB for Python update effort is 10 years
-old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made to
-the scripts identified below may be irrelevant with regard to newer versions
-of RTB. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b currently
-available to run RTB for MATLAB, there is a possibility that some modifications
-may be incompatable with older versions of Octave and MATLAB, and newer versions
-of Octave.
+Since the base source code used in the RTB for Python - Update 1 effort is 10
+years old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made
+made to scripts identified below may be irrelevant with regard to newer versions
+of RTB and Octave. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b
+currently available to run RTB for MATLAB, there is a possibility that some
+modifications may be incompatable with older versions of Octave and MATLAB.
 
 It should be understood that there are some functions in MATLAB utilized by RTB
 for MATLAB that are not yet a core functionality in Octave (e.g., hgtransform)
 or are implemented in different manner (e.g., classes); necessitating syntactic
 changes to scripts. The isOctave() function has been introduced to wrap Octave
 specific code in order to retain a modified script's compatibility with MATLAB.
+
+It is projected that GNU Octave version 5 will incorporate enhancements which
+make the current hgtranform.m script obsolete, may eliminate the need for
+isOctave wrapping and provide better compatiblity with MATLAB classes.
 
 
 List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts.
