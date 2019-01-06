@@ -1539,8 +1539,8 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
     pose to the pose P represented by any of the types listed above.
 
     TRANIMATE(PSEQ, OPTIONS) animates a trajectory, where PSEQ is any of
-      - homogeneous transformation matrix sequence (4x4xN)
-      - orthonormal rotation matrix sequence (3x3xN)
+      - homogeneous transformation matrix sequence (Nx4x4)
+      - orthonormal rotation matrix sequence (Nx3x3)
       - Quaternion vector (Nx1)
 
     Options::
