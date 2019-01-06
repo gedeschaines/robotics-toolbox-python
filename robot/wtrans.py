@@ -36,7 +36,7 @@ def wtrans(T, W):
     are all matrices.
 
     @type T: 4x4 NumPy matrix
-    @parma T: homogeneous transform matrix
+    @param T: homogeneous transform matrix
     @type W : 1x6 or 6x1 vector as an array or matrix
     @param W: wrench vector
     @rtype Wt: 1x6 or 6x1 vector as an array or matrix
