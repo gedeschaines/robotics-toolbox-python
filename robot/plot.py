@@ -975,7 +975,7 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
         if Record == 0:
             fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
         else:
-            fig = plt.figure(figsize=(6, 4), dpi=80, facecolor='white')
+            fig = plt.figure(figsize=(8, 6), dpi=80, facecolor='white')
 
         fign = fig.number
 
@@ -1195,10 +1195,10 @@ def rbplot(robot, Q, phold=False, rec=0, movie='.', **opts):
 
 trplotAnims3D = {}   # dict of instantiated 3D trplot animation objects
 trplotClose3D = {}   # dict of 3D trplot close handlers
-tranim_lines3D = {}  # line artists drawn for 3D trplots
-tranim_text3D = {}   # text artists drawn for 3D trplots
+tranim_lines3D = []  # line artists drawn for 3D trplots
+tranim_text3D = []   # text artists drawn for 3D trplots
 
-def trplot(TorR, fig=None, **opts):
+def trplot(TorR, fig=None, phold=False, **opts):
     """
     TRPLOT Draw a coordinate frame
 
@@ -1218,13 +1218,16 @@ def trplot(TorR, fig=None, **opts):
     TRPLOT(H, R) moves the coordinate frame described by the handle H to
     the orientation R.
 
+    'fig',hfig         Handle of figure to plot on
+    'phold',Bool       Hold the current plot data
+
     Options::
     'title',text       The figure title
     'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
+    'frame',F          The frame is named {F} and the subscript on the axis labels is F.
     ### THE FOLLOWING Options ARE NOT CURRENTLY IMPLEMENTED ###
     'color',C          The color to draw the axes, MATLAB colorspec C
     'noaxes'           Don't display axes on the plot
-    'frame',F          The frame is named {F} and the subscript on the axis labels is F.
     'text_opts',opt    A cell array of MATLAB text properties
     'handle',H         Draw in the MATLAB axes specified by the axis handle H
     'view',V           Set plot view parameters V=[az el] angles, or 'auto'
@@ -1278,6 +1281,10 @@ def trplot(TorR, fig=None, **opts):
     if 'axis' in opts:
        opt_axis = opts['axis']
 
+    opt_frame = ""
+    if 'frame' in opts:
+       opt_frame = "{" + opts['frame'] + "}"
+
     if isrot(TorR):
         T = r2t(TorR)
     elif isinstance(TorR, quaternion):
@@ -1287,6 +1294,7 @@ def trplot(TorR, fig=None, **opts):
     else:
         raise ValueError
 
+    # apply transform to reference coordinate frame
     o = np.asarray((T * np.mat([0.0, 0.0, 0.0, 1.0]).T).T).ravel()
     x = np.asarray((T * np.mat([1.0, 0.0, 0.0, 1.0]).T).T).ravel()
     y = np.asarray((T * np.mat([0.0, 1.0, 0.0, 1.0]).T).T).ravel()
@@ -1321,12 +1329,15 @@ def trplot(TorR, fig=None, **opts):
         xaxis_lbl = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
         yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
         zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+        # allocate artist for frame label
+        ot = [o[0]-0.04*x[0], o[1]-0.04*y[1], o[2]-0.04*z[2]]
+        frame_lbl = ax.text3D(ot[0], ot[1], ot[2], opt_frame, ha='center', va='top')
         # allocate artist for frame time, but only display if animating
         tx = opt_axis[0]*1.2
         ty = opt_axis[3]*1.2
         tz = opt_axis[5]*1.2
         time_text = ax.text3D(tx, ty, tz, '', ha='center', va='bottom')
-        # set figure subplot title, axis labels and limits
+        # set figure title and axes labels
         ax.set_title(opt_title)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -1336,24 +1347,58 @@ def trplot(TorR, fig=None, **opts):
         ax.add_line(line2)
         ax.add_line(line3)
         tranim_lines3D = [line1, line2, line3]
-        tranim_text3D = [xaxis_lbl, yaxis_lbl, zaxis_lbl, time_text]
-        
+        tranim_text3D = [xaxis_lbl, yaxis_lbl, zaxis_lbl, frame_lbl, time_text]
+
     # draw orthogonal xyz axes
-    tranim_lines3D[0].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
-    tranim_lines3D[0].set_3d_properties([o[2], x[2]])
-    tranim_lines3D[1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
-    tranim_lines3D[1].set_3d_properties([o[2], y[2]])
-    tranim_lines3D[2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
-    tranim_lines3D[2].set_3d_properties([o[2], z[2]])
+    ax = tranim_lines3D[0].axes  # get axes instance the line3d
+    if ax is not None:           # artists reside in
+        if phold:
+            k = len(tranim_lines3D)  # index for next axis line set
+            # lines in order to be drawn
+            line1 = Line3D([], [], [], color='r', ls='-', lw=2.0,  # x-axis
+                           marker=' ', mew=1.0, mec='r', mfc='r')
+            line2 = Line3D([], [], [], color='g', ls='-', lw=2.0,  # y-axis
+                           marker=' ', mew=1.0, mec='g', mfc='g')
+            line3 = Line3D([], [], [], color='b', ls='-', lw=2.0,  # z-axis
+                           marker=' ', mew=1.0, mec='b', mfc='b')
+            # store allocated line artists in global array 
+            ax.add_line(line1)
+            ax.add_line(line2)
+            ax.add_line(line3)
+            tranim_lines3D = tranim_lines3D + [line1, line2, line3]
+        else:
+            k = 0  # index for first axis line set
+
+        tranim_lines3D[k].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
+        tranim_lines3D[k].set_3d_properties([o[2], x[2]])
+        tranim_lines3D[k+1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
+        tranim_lines3D[k+1].set_3d_properties([o[2], y[2]])
+        tranim_lines3D[k+2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
+        tranim_lines3D[k+2].set_3d_properties([o[2], z[2]])
     
     # draw orthogonal xyz axes labels
     ax = tranim_text3D[0].axes  # get axes instance the text3d
     if ax is not None:          # artists reside in
-        for i in range(0,3):
-            tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
-        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
-        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+        if phold:
+           k = len(tranim_text3D)  # index for next axis and frame labels set
+           # allocate artists for xyz axes labels
+           xaxis_lbl = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+           yaxis_lbl = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+           zaxis_lbl = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+           # allocate artist for frame label
+           ot = [o[0]-0.04*x[0], o[1]-0.04*y[1], o[2]-0.04*z[2]]
+           frame_lbl = ax.text3D(ot[0], ot[1], ot[2], opt_frame, ha='center', va='top')
+           # store allocated artists in global arrays
+           tranim_text3D = tranim_text3D + [xaxis_lbl, yaxis_lbl, zaxis_lbl, frame_lbl]
+        else:
+           k = 0  # index for first axis and frame labels set
+           for i in range(0,4):
+               tranim_text3D[i].remove()
+           tranim_text3D[k]   = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+           tranim_text3D[k+1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+           tranim_text3D[k+2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+           ot = [o[0]-0.04*x[0], o[1]-0.04*y[1], o[2]-0.04*z[2]]
+           tranim_text3D[k+3] = ax.text3D(ot[0], ot[1], ot[2], opt_frame, ha='center', va='top')
         
     fig.canvas.draw()
 
@@ -1364,7 +1409,8 @@ def _trinit3d():
     """
     Initialization function for 3D animation of frame transforms.
     """
-    global tranim_lines3D, tranim_text3D
+    global tranim_lines3D  # line artists drawn for 3D plots of frame transforms
+    global tranim_text3D   # text artists drawn for 3D plots of frame transforms
 
     for a in tranim_lines3D:
         a.set_data([], [])
@@ -1436,7 +1482,7 @@ def _tranim_replay(fig):
     return fig
         
 
-def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
+def _tranim3d(nf, Ttraj, fps, itranim_lines3D, itranim_text3D, opts):
     """
     Callback function for 3D animation of frame transforms.
 
@@ -1444,14 +1490,37 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     @param nf: animation frame number (initial frame is 0)
     @type Ttraj: list of nxn matrices
     @param Ttraj: the trajectory of frame transforms
-    
+
+    Options::
+    'frame', F      The frame is named {F} and the subscript on the axis labels is F
+    'trace', [0,n]  Trace the paths of tips of the frame axes over the past n steps
+
     @see: L{tranimate}
     """
+    global tranim_lines3D  # line artists drawn for 3D trplots
+    global tranim_text3D   # text artists drawn for 3D trplots
+
+    opt_frame = ""
+    if 'frame' in opts:
+       opt_frame = "{" + opts['frame'] + "}"
+
+    opt_trace = 0
+    if 'trace' in opts:
+       opt_trace = min(max(0,opts['trace']),nf)
+
     if nf >= len(Ttraj):
-        fig = _tranim_replay(plt.gcf())
-        if fig is None:
-           return []
-        return tranim_lines3D + tranim_text3D
+        # enter tranimate replay mode
+        #fig = _tranim_replay(plt.gcf())
+        #if fig is None:
+        #   return []
+        if opt_trace > 0:
+            # erase all of frame axis tip traces
+            for a in tranim_lines3D[3:]:
+               a.set_visible(False)
+
+        itranim_lines3D = tranim_lines3D
+
+        return itranim_lines3D + itranim_text3D
 
     T = Ttraj[nf]
 
@@ -1462,32 +1531,75 @@ def _tranim3d(nf, Ttraj, fps, tranim_lines3D, tranim_text3D):
     elif not ishomog(T):
         raise ValueError
 
+    # apply transform to reference coordinate frame
     o = np.asarray((T * np.mat([0.0, 0.0, 0.0, 1.0]).T).T).ravel()
     x = np.asarray((T * np.mat([1.0, 0.0, 0.0, 1.0]).T).T).ravel()
     y = np.asarray((T * np.mat([0.0, 1.0, 0.0, 1.0]).T).T).ravel()
     z = np.asarray((T * np.mat([0.0, 0.0, 1.0, 1.0]).T).T).ravel()
 
     # draw orthogonal xyz axes
-    tranim_lines3D[0].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
-    tranim_lines3D[0].set_3d_properties([o[2], x[2]])
-    tranim_lines3D[1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
-    tranim_lines3D[1].set_3d_properties([o[2], y[2]])
-    tranim_lines3D[2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
-    tranim_lines3D[2].set_3d_properties([o[2], z[2]])
-    
-    # draw orthogonal xyz axes labels
-    ax = tranim_text3D[0].axes  # get axes instance the text3d
-    if ax is not None:          # artists reside in
-        for i in range(0,3):
-            tranim_text3D[i].remove()
-        tranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
-        tranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
-        tranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+    itranim_lines3D[0].set_data([o[0], x[0]], [o[1], x[1]])  # x-axis
+    itranim_lines3D[0].set_3d_properties([o[2], x[2]])
+    itranim_lines3D[1].set_data([o[0], y[0]], [o[1], y[1]])  # y-axis
+    itranim_lines3D[1].set_3d_properties([o[2], y[2]])
+    itranim_lines3D[2].set_data([o[0], z[0]], [o[1], z[1]])  # z-axis
+    itranim_lines3D[2].set_3d_properties([o[2], z[2]])
+
+    if opt_trace > 0:
+       ax = tranim_lines3D[0].axes  # get axes instance the line3d
+       if ax is not None:           # artists reside in
+           k = len(tranim_lines3D)  # index for next axis tip point set
+           if nf > opt_trace :
+                # erase the point (opt_trace+1) point sets back
+                kdel = nf - (opt_trace+1)
+                imin = kdel*4 + 3
+                imax = imin + 4
+                for a in tranim_lines3D[imin:imax]:
+                    a.set_visible(False)
+           # points in order to be drawn
+           point0 = Line3D([], [], [], color='k', ls=' ', lw=1.0,  # origin
+                          marker='.', mew=0.5, mec='k', mfc='k')
+           point1 = Line3D([], [], [], color='r', ls=' ', lw=1.0,  # x-axis tip
+                          marker='.', mew=0.5, mec='r', mfc='r')
+           point2 = Line3D([], [], [], color='g', ls=' ', lw=1.0,  # y-axis tip
+                          marker='.', mew=0.5, mec='g', mfc='g')
+           point3 = Line3D([], [], [], color='b', ls=' ', lw=1.0,  # z-axis tip
+                          marker='.', mew=0.5, mec='b', mfc='b')
+           # store allocated line artists in global array
+           ax.add_line(point0)
+           ax.add_line(point1)
+           ax.add_line(point2)
+           ax.add_line(point3)
+           tranim_lines3D = tranim_lines3D + [point0, point1, point2, point3]
+           # draw origin and tips of orthogonal xyz axes
+           tranim_lines3D[k].set_data([o[0], o[0]], [o[1], o[1]])    # origin
+           tranim_lines3D[k].set_3d_properties([o[2], o[2]])
+           tranim_lines3D[k+1].set_data([x[0], x[0]], [x[1], x[1]])  # x-axis tip
+           tranim_lines3D[k+1].set_3d_properties([x[2], x[2]])
+           tranim_lines3D[k+2].set_data([y[0], y[0]], [y[1], y[1]])  # y-axis tip
+           tranim_lines3D[k+2].set_3d_properties([y[2], y[2]])
+           tranim_lines3D[k+3].set_data([z[0], z[0]], [z[1], z[1]])  # z-axis tip
+           tranim_lines3D[k+3].set_3d_properties([z[2], z[2]])
+           itranim_lines3D = tranim_lines3D
+
+    # draw orthogonal xyz axes and frame label
+    ax = itranim_text3D[0].axes  # get axes instance the text3d
+    if ax is not None:           # artists reside in
+        for i in range(0,4):
+            itranim_text3D[i].remove()
+        # allocate artists for xyz axes labels
+        itranim_text3D[0] = ax.text3D(x[0], x[1], x[2], 'X', ha='left', va='center')
+        itranim_text3D[1] = ax.text3D(y[0], y[1], y[2], 'Y', ha='left', va='center')
+        itranim_text3D[2] = ax.text3D(z[0], z[1], z[2], 'Z', ha='left', va='center')
+        # allocate artist for frame label
+        ot = [o[0]-0.04*x[0], o[1]-0.04*y[1], o[2]-0.04*z[2]]
+        itranim_text3D[3] = ax.text3D(ot[0], ot[1], ot[2], opt_frame, ha='center', va='top')
+
     # representative frame time
     time_str = 'time = %.3f' % (float(nf)/fps)
-    tranim_text3D[3].set_text(time_str)
-    
-    return tranim_lines3D + tranim_text3D
+    itranim_text3D[4].set_text(time_str)
+
+    return itranim_lines3D + itranim_text3D
 
 
 tranim_mbutton = 0  # button value saved by tranimate mouse button handler
@@ -1544,12 +1656,13 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
       - Quaternion vector (Nx1)
 
     Options::
-     'nsteps', n   The number of steps along the path (default 50)
-     'fps', fps    Number of frames per second to display (default 10)
-     'rec', 0|1    Record animation in a video file (default 0=No)
-     'movie', M    filepath M to recorded animation movie file (default '.')
-     'axis', A     Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
-
+     'nsteps', n     The number of steps along the path (default 50)
+     'fps', fps      Number of frames per second to display (default 10)
+     'rec', 0|1      Record animation in a video file (default 0=No)
+     'movie', M      filepath M to recorded animation movie file (default '.')
+     'axis', A       Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+     'frame', F      The frame is named {F} and the subscript on the axis labels is F
+     'trace', [0,n]  Trace the paths of tips of the frame axes over the past n steps
 
     Notes::
       - The 'rec' option saves animation frames to mpeg video file if
@@ -1635,7 +1748,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
         # create a path between them
         Ttraj = ctraj(T1, T2[0], nsteps)
 
-    fig  = trplot(eye(4, 4), fig=None, **opts)  # create a frame at the origin
+    fig  = trplot(eye(4, 4), fig=None, phold=False, **opts)  # create a frame at the origin
     fign = fig.number
 
     # If recording, assign an animation writer
@@ -1659,7 +1772,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
     tdel      = 1.0/fps
     tdel_msec = 1000.0*tdel
     tmsec0    = 1000.0*time.clock()
-    _tranim3d(0, Ttraj, fps, tranim_lines3D, tranim_text3D)
+    _tranim3d(0, Ttraj, fps, tranim_lines3D, tranim_text3D, opts)
     tmsec1    = 1000.0*time.clock()
     tstep     = tmsec1 - tmsec0
     #interval  = ceil(tmsec1-tmsec0)  # allows faster than real-time
@@ -1688,7 +1801,7 @@ def tranimate(P1, P2, nsteps=50, fps=10, rec=0, movie='.', **opts):
         pass          # when animation init_func erases lines and text.
 
     _trinit3d()  # reset 3D animation due to animation interval timing test
-    anim = animation.FuncAnimation(fig, _tranim3d, fargs=(Ttraj, fps, tranim_lines3D, tranim_text3D),
+    anim = animation.FuncAnimation(fig, _tranim3d, fargs=(Ttraj, fps, tranim_lines3D, tranim_text3D, opts),
                                    init_func=_trinit3d,
                                    frames=nframes, blit=blit,
                                    interval=interval, repeat=False)
