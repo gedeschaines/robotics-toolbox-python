@@ -24,7 +24,7 @@ changes to scripts. The isOctave() function has been introduced to wrap Octave
 specific code in order to retain a modified script's compatibility with MATLAB.
 
 It is projected that GNU Octave version 5 will incorporate enhancements which
-make the current hgtranform.m script obsolete, may eliminate the need for
+make the current hgtransform.m script obsolete, may eliminate the need for
 isOctave wrapping and provide better compatiblity with MATLAB classes.
 
 
