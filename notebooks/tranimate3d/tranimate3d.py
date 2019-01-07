@@ -54,7 +54,7 @@ rc('animation', html='jshtml')   # Matplotlib animations will be HTML wrapped Ja
 """ RBT for Python robot imports
 """
 import _robot                   # use helper script to locate local RTB for Python robot module
-from robot.plot import *        # needed to access robot plot module globals (i.e., trplotAnims2D)
+from robot.plot import *        # needed to access robot plot module globals (i.e., trplotAnims3D)
 from robot.transform import *   # needed for transl(), trotx(), troty() & trotz() function
 from robot.trajectory import *  # needed for ctraj() function
 
@@ -72,6 +72,18 @@ T1 = transl(-0.4, -0.2, 0.3) * troty(pi/2) * trotz(-pi/2)
 # In[5]:
 
 
+# The intial and final pose of the transform's coordinate frame axes
+# can be viewed using the trplot() function.
+ftitle  = 'Initial and Final Transforms'
+axlims = [-1.5, 1.5, -1.5, 1.5, -1.5, 1.5]
+fig = trplot(T0, title=ftitle, axis=axlims, frame="T0")
+trplot(T1, fig, phold=True, frame="T1")
+plt.show()  # show the current plot figure.
+
+
+# In[6]:
+
+
 # and apply the ctraj() function to create the smooth sequence
 # T between them in 50 steps as:
 T = ctraj(T0, T1, 50)
@@ -80,15 +92,31 @@ print("The first pose transform is:")
 print(T[0])
 print("The tenth pose transform is:")
 print(T[9])
+print("The final pose transform is:")
+print(T[49])
 
 
-# In[6]:
+# In[7]:
 
 
-# We can plot and record the motion of an XYZ Cartesian coordinate
+# The first and last pose of the transform's coordinate frame axes
+# can be viewed using the trplot() function.
+axlims = [-1.5, 1.5, -1.5, 1.5, -1.5, 1.5]
+trplot(T[0], fig, phold=True)
+trplot(T[49], fig, phold=True)
+
+
+# Now use tranimate() to display an animation of transform coordinate frame axes plotted with successive calls to trplot() over the sequence of transforms in T. Although the plot will be animated when initially drawn, the backend figure manager only provides the capability to manipulate the last displayed image. In Jupyter nbviewer this plot will only show the final position and orientation of the transform coordinate frame axes.
+#  
+# Note: do not close this interactive plot until after the cell following this next cell has been run to create the controlled animation.
+
+# In[8]:
+
+
+# We can plot and record the motion of a transform's XYZ Cartesian coordinate
 # frame by using the tranimate() function.
 axlims = [-1.5, 1.5, -1.5, 1.5, -1.5, 1.5]
-tranimate(T, None, rec=0, movie="./images", axis=axlims)
+tranimate(T, None, rec=0, movie="./images", axis=axlims, frame="T", trace=5)
 
 # tranimate() creates a Matplotlib animation 3D object and saves a handle to it
 # in the trplotAnims3D dictionary using the animator's managed figure number as
@@ -97,10 +125,10 @@ fignum = plt.gcf().number
 print("fignum = %d" % fignum)
 
 
-# In[7]:
+# In[9]:
 
 
-# Display the RTB for Python rbplot() animation of the Puma 560 as a controlled animation.
+# Display trplot() animation of transform coordinate axes as a controlled animation.
 trplotAnims3D[fignum]
 
 
@@ -108,7 +136,7 @@ trplotAnims3D[fignum]
 # transform animation movie for comparison with RTB for Python. The octave_tranim3d.m
 # script will create movie file RTB_tranimate.avi in the ./images/Octave subdirectory.
 # 
-# The Octave process will block after displaying the "RTB-tranimate - Recorded Frames'
+# The Octave process will block after displaying the "RTB-tranimate - Recorded Frames"
 # figure while awaiting left or right mouse button clicks on the figure's axis area. 
 # Left button clicks will replay the recorded animation and a right button click will
 # close both figures and terminate the Octave process.

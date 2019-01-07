@@ -43,6 +43,8 @@ printf("The first pose transform is:\n");
 display(T(:,:,1));
 printf("The tenth pose transform is:\n");
 display(T(:,:,10));
+printf("The final pose transform is:\n");
+display(T(:,:,50));
 
 % We can plot and record the motion of an XYZ Cartesian coordinate
 % frame by using the tranimate() function.
