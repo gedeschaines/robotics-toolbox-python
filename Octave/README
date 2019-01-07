@@ -25,7 +25,7 @@ specific code in order to retain a modified script's compatibility with MATLAB.
 
 It is projected that GNU Octave version 5 will incorporate enhancements which
 make the current hgtransform.m script obsolete, may eliminate the need for
-isOctave wrapping and provide better compatiblity with MATLAB classes.
+isOctave wrapping and provide better compatibility with MATLAB classes.
 
 
 List of modified and newly added Robotics Toolbox for MATLAB v9.8 Octave scripts.
