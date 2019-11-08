@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/Octave/rvctools/demo" />
+      <excludeFolder url="file://$MODULE_DIR$/Octave/rvctools/images" />
+      <excludeFolder url="file://$MODULE_DIR$/Octave/rvctools/private" />
+      <excludeFolder url="file://$MODULE_DIR$/Octave/rvctools/test" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/images/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/notebooks/dynamics3d/.ipynb_checkpoints" />
+      <excludeFolder url="file://$MODULE_DIR$/notebooks/fourlink2d/.ipynb_checkpoints" />
+      <excludeFolder url="file://$MODULE_DIR$/notebooks/kinematic2d/.ipynb_checkpoints" />
+      <excludeFolder url="file://$MODULE_DIR$/notebooks/tranimate3d/images/Octave/jpgs" />
+      <excludeFolder url="file://$MODULE_DIR$/robotics_toolbox_python_update1.egg-info" />
+      <excludeFolder url="file://$MODULE_DIR$/temp" />
+      <excludeFolder url="file://$MODULE_DIR$/work" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="TestRunnerService">
+    <option name="projectConfiguration" value="pytest" />
+    <option name="PROJECT_TEST_RUNNER" value="pytest" />
+  </component>
+</module>
