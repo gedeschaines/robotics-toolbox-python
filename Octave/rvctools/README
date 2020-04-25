@@ -54,3 +54,10 @@ Instructions for using the modified Robotics Toolbox for MATLAB scripts.
     type the test script name.
 
       >> jacobian
+
+(7) In a shell terminal window, test scripts can be executed from within
+    this subdirectory by invoking Octave with a test script path as an 
+    argument, such as:
+
+      > octave ./robot/tests/test_plot2d.m
+
