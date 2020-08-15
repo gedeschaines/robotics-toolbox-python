@@ -11,7 +11,7 @@ submitting them for review as possible candidates for inclusion into the Robotic
 Toolbox for MATLAB respository.
 
 Since the base source code used in the RTB for Python - Update 1 effort is 10
-years old, and the base RTB v9.8 Octave scripts are 7 years old, the changes made
+years old, and the base RTB v9.8 Octave scripts are 7 years old, the changes
 made to scripts identified below may be irrelevant with regard to newer versions
 of RTB and Octave. Also, with only Octave v4.0.2 and v4.2.2, and MATLAB R2018b
 currently available to run RTB for MATLAB, there is a possibility that some
